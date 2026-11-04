@@ -34,7 +34,7 @@ class UserAssetViewModelTest {
         val builtIns = viewModel.buildAssetList(emptyList(), "source")
         val rows = viewModel.buildAssetList(listOf(saved, custom), "source")
 
-        assertEquals(5, rows.size)
+        assertEquals(4, rows.size)
         assertEquals(saved, rows.single { it.assetUrl.remarks == saved.assetUrl.remarks })
         assertEquals(custom, rows.single { it.guid == custom.guid })
         assertEquals(
