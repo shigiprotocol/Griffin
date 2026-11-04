@@ -3,10 +3,9 @@ package com.v2ray.ang.core
 /**
  * What is left to do once [CoreServiceManager] has reloaded the core after a network handover.
  *
- * A reload stops Xray and starts it again on a background thread while the service, its tunnel and
- * the Aether core stay up. Two ways of ending it would leave those parts out of step, and the rule is
- * that they run together or not at all: when one of Xray, the Aether core and the service stops, the
- * others stop too.
+ * A reload stops Xray and starts it again on a background thread while the service and its tunnel
+ * stay up. Two ways of ending it would leave those parts out of step, and the rule is that they run
+ * together or not at all: when one of Xray and the service stops, the other stops too.
  *
  * It is kept apart from [CoreServiceManager] because that object loads the native core when it is
  * initialized, which a JVM test cannot do.
@@ -17,7 +16,7 @@ internal enum class ReloadOutcome {
     KEEP_RUNNING,
 
     /**
-     * The reload failed, so Xray is stopped while the tunnel, the root rules and the Aether core are
+     * The reload failed, so Xray is stopped while the tunnel and the root rules are
      * still up around it, swallowing traffic behind a main screen that shows a stopped service. The
      * service is stopped as a whole.
      */
@@ -25,7 +24,7 @@ internal enum class ReloadOutcome {
 
     /**
      * The service was stopped while the reload ran. Its teardown found no Xray to stop, and the
-     * reload then started Xray and the Aether core for a service that is gone; they are released.
+     * reload then started Xray for a service that is gone; they are released.
      */
     RELEASE_CORES;
 
@@ -44,7 +43,7 @@ internal enum class ReloadOutcome {
 
         /**
          * Whether the service is up, which is more than whether Xray runs: a reload has Xray stopped
-         * for a moment while the service, its tunnel and the Aether core stay up.
+         * for a moment while the service and its tunnel stay up.
          *
          * A client that asks for the state goes by it, as nothing tells it once Xray runs again, and
          * "not running" would leave the main screen showing a stopped service that runs. So does

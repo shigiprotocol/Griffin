@@ -1,14 +1,20 @@
-name: Build APK
+name: Build Griffin APK
 
 on:
   workflow_dispatch:
     inputs:
       release_tag:
+        description: "Publish the APKs as a GitHub release with this tag (leave empty to only build)"
         required: false
         type: string
   push:
     branches:
+      - my-releases
       - master
+      - griffin
+    paths-ignore:
+      - "**.md"
+      - "fastlane/**"
 
 permissions:
   contents: write
@@ -16,14 +22,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      # The latest stable release, as aether's own release workflow builds with. The libaether
-      # cache is keyed by the rustc it installs, so a new stable release builds the core afresh.
-      RUST_TOOLCHAIN: "stable"
-      # The Go line the Psiphon client's go.mod asks for, which also covers lyrebird's older one;
-      # aether/psiphon-build.sh and aether/pt-build.sh pin the programs themselves. Bump it when a
-      # bumped aether submodule pins a program that asks for a newer line.
-      GO_VERSION: "1.26"
 
     steps:
     - name: Checkout code
@@ -60,7 +58,7 @@ jobs:
       if: steps.cache-libhevtun-restore.outputs.cache-hit != 'true'
       run: |
         bash compile-hevtun.sh
-    
+
     - name: Save libhevtun
       if: steps.cache-libhevtun-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v6
@@ -68,93 +66,9 @@ jobs:
         path: ${{ github.workspace }}/libs
         key: libhevtun-${{ runner.os }}-${{ env.NDK_HOME }}-${{ hashFiles('.git/modules/hev-socks5-tunnel/HEAD') }}-${{ hashFiles('compile-hevtun.sh') }}
 
-    - name: Install Rust
-      id: rust-toolchain
-      uses: dtolnay/rust-toolchain@master
-      with:
-        toolchain: ${{ env.RUST_TOOLCHAIN }}
-        targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android
-
-    - name: Restore cached libaether
-      id: cache-libaether-restore
-      uses: actions/cache/restore@v6
-      with:
-        path: ${{ github.workspace }}/libs-aether
-        key: libaether-${{ runner.os }}-${{ env.NDK_HOME }}-${{ steps.rust-toolchain.outputs.cachekey }}-${{ hashFiles('.git/modules/aether/HEAD') }}-${{ hashFiles('compile-aether.sh') }}
-
-    - name: Build libaether
-      if: steps.cache-libaether-restore.outputs.cache-hit != 'true'
-      run: |
-        bash compile-aether.sh
-
-    - name: Save libaether
-      if: steps.cache-libaether-restore.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v6
-      with:
-        path: ${{ github.workspace }}/libs-aether
-        key: libaether-${{ runner.os }}-${{ env.NDK_HOME }}-${{ steps.rust-toolchain.outputs.cachekey }}-${{ hashFiles('.git/modules/aether/HEAD') }}-${{ hashFiles('compile-aether.sh') }}
-
-    - name: Install Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ env.GO_VERSION }}
-        # The client is built from a checkout of its own; there is no go.sum here to cache by.
-        cache: false
-
-    # The Aether core runs Psiphon as a program of its own, the psiphon-tunnel-core console client,
-    # which the app ships beside the core as libpsiphon-tunnel-core.so; see compile-psiphon.sh.
-    - name: Restore cached Psiphon client
-      id: cache-psiphon-restore
-      uses: actions/cache/restore@v6
-      with:
-        path: ${{ github.workspace }}/libs-psiphon
-        key: psiphon-${{ runner.os }}-${{ env.GO_VERSION }}-${{ hashFiles('aether/psiphon-build.sh') }}-${{ hashFiles('compile-psiphon.sh') }}
-
-    - name: Build the Psiphon client
-      if: steps.cache-psiphon-restore.outputs.cache-hit != 'true'
-      run: |
-        bash compile-psiphon.sh
-
-    - name: Save the Psiphon client
-      if: steps.cache-psiphon-restore.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v6
-      with:
-        path: ${{ github.workspace }}/libs-psiphon
-        key: psiphon-${{ runner.os }}-${{ env.GO_VERSION }}-${{ hashFiles('aether/psiphon-build.sh') }}-${{ hashFiles('compile-psiphon.sh') }}
-
-    # Tor's bridges run through a pluggable transport, a program of its own: lyrebird, which aether
-    # builds and the app ships beside the core as liblyrebird.so; see compile-pt.sh.
-    - name: Restore cached pluggable transport
-      id: cache-pt-restore
-      uses: actions/cache/restore@v6
-      with:
-        path: ${{ github.workspace }}/libs-pt
-        key: pt-${{ runner.os }}-${{ env.GO_VERSION }}-${{ hashFiles('aether/pt-build.sh') }}-${{ hashFiles('compile-pt.sh') }}
-
-    - name: Build the pluggable transport
-      if: steps.cache-pt-restore.outputs.cache-hit != 'true'
-      run: |
-        bash compile-pt.sh
-
-    - name: Save the pluggable transport
-      if: steps.cache-pt-restore.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v6
-      with:
-        path: ${{ github.workspace }}/libs-pt
-        key: pt-${{ runner.os }}-${{ env.GO_VERSION }}-${{ hashFiles('aether/pt-build.sh') }}-${{ hashFiles('compile-pt.sh') }}
-
     - name: Stage the native libraries
       run: |
         cp -r ${{ github.workspace }}/libs ${{ github.workspace }}/V2rayNG/app
-        cp -r ${{ github.workspace }}/libs-aether/. ${{ github.workspace }}/V2rayNG/app/libs/
-        cp -r ${{ github.workspace }}/libs-psiphon/. ${{ github.workspace }}/V2rayNG/app/libs/
-        cp -r ${{ github.workspace }}/libs-pt/. ${{ github.workspace }}/V2rayNG/app/libs/
-
-    # Psiphon's client starts with the newest server list the build could fetch, so a fresh install has
-    # servers before it can reach the list on its own; see fetch-psiphon-servers.sh.
-    - name: Fetch the Psiphon server list
-      run: |
-        bash fetch-psiphon-servers.sh
 
     - name: Fetch AndroidLibXrayLite tag
       run: |
@@ -178,36 +92,95 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
 
-    - name: Decode Keystore
-      uses: timheuer/base64-to-file@v2.0.0
-      id: android_keystore
+    # Without the APP_KEYSTORE_* secrets the APKs are signed with a key kept in the Actions cache under a fixed
+    # name, so that one build installs over the one before. Add the secrets to sign with a key of your own for good.
+    - name: Restore the fallback signing key
+      uses: actions/cache/restore@v6
       with:
-        fileName: "android_keystore.jks"
-        encodedString: ${{ secrets.APP_KEYSTORE_BASE64 }}
+        path: ${{ github.workspace }}/fallback-signing.jks
+        key: griffin-fallback-signing-key-v1
+
+    - name: Set up the signing key
+      env:
+        APP_KEYSTORE_BASE64: ${{ secrets.APP_KEYSTORE_BASE64 }}
+        APP_KEYSTORE_PASSWORD: ${{ secrets.APP_KEYSTORE_PASSWORD }}
+        APP_KEYSTORE_ALIAS: ${{ secrets.APP_KEYSTORE_ALIAS }}
+        APP_KEY_PASSWORD: ${{ secrets.APP_KEY_PASSWORD }}
+      run: |
+        if [ -n "$APP_KEYSTORE_BASE64" ]; then
+          printf '%s' "$APP_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "SIGN_STORE=$RUNNER_TEMP/release.jks" >> $GITHUB_ENV
+          echo "SIGN_STORE_PASS=$APP_KEYSTORE_PASSWORD" >> $GITHUB_ENV
+          echo "SIGN_ALIAS=$APP_KEYSTORE_ALIAS" >> $GITHUB_ENV
+          echo "SIGN_KEY_PASS=$APP_KEY_PASSWORD" >> $GITHUB_ENV
+          echo "Signing with the key of the APP_KEYSTORE_* secrets"
+        else
+          if [ ! -f fallback-signing.jks ]; then
+            keytool -genkeypair -v -keystore fallback-signing.jks -storepass griffin -keypass griffin \
+              -alias griffin -keyalg RSA -keysize 4096 -validity 10000 -dname "CN=Griffin, O=shigiprotocol"
+            echo "FALLBACK_KEY_CREATED=true" >> $GITHUB_ENV
+          fi
+          echo "SIGN_STORE=${{ github.workspace }}/fallback-signing.jks" >> $GITHUB_ENV
+          echo "SIGN_STORE_PASS=griffin" >> $GITHUB_ENV
+          echo "SIGN_ALIAS=griffin" >> $GITHUB_ENV
+          echo "SIGN_KEY_PASS=griffin" >> $GITHUB_ENV
+          echo "::warning::APP_KEYSTORE_* secrets are not set; the APKs are signed with the fallback key from the Actions cache"
+        fi
+
+    - name: Save the fallback signing key
+      if: env.FALLBACK_KEY_CREATED == 'true'
+      uses: actions/cache/save@v6
+      with:
+        path: ${{ github.workspace }}/fallback-signing.jks
+        key: griffin-fallback-signing-key-v1
 
     - name: Build APK
       run: |
         cd ${{ github.workspace }}/V2rayNG
         echo "sdk.dir=${ANDROID_HOME}" > local.properties
         chmod 755 gradlew
+        set -o pipefail
         # The JVM unit tests are the only automated check of the Kotlin logic; a failure stops the
         # build before anything is assembled or signed.
-        ./gradlew :app:testPlaystoreDebugUnitTest
-        ./gradlew licenseFdroidReleaseReport
-        ./gradlew assembleRelease -PpattngVersion="${{ inputs.release_tag }}" -Pandroid.injected.signing.store.file=${{ steps.android_keystore.outputs.filePath }} -Pandroid.injected.signing.store.password=${{ secrets.APP_KEYSTORE_PASSWORD }} -Pandroid.injected.signing.key.alias=${{ secrets.APP_KEYSTORE_ALIAS }} -Pandroid.injected.signing.key.password=${{ secrets.APP_KEY_PASSWORD }}
-    
+        ./gradlew :app:testPlaystoreDebugUnitTest 2>&1 | tee -a gradle.log
+        ./gradlew licenseFdroidReleaseReport 2>&1 | tee -a gradle.log
+        ./gradlew assembleRelease -PpattngVersion="${{ inputs.release_tag }}" \
+          -Pandroid.injected.signing.store.file="$SIGN_STORE" \
+          -Pandroid.injected.signing.store.password="$SIGN_STORE_PASS" \
+          -Pandroid.injected.signing.key.alias="$SIGN_ALIAS" \
+          -Pandroid.injected.signing.key.password="$SIGN_KEY_PASS" 2>&1 | tee -a gradle.log
+
+    # Compiler and test failures as annotations, so they can be read on the run's page without its log.
+    - name: Report build errors
+      if: failure()
+      run: |
+        LOG=${{ github.workspace }}/V2rayNG/gradle.log
+        [ -f "$LOG" ] || exit 0
+        grep -E '^e: |error:|What went wrong|> Task .* FAILED|Execution failed|FAILED$|Test.*FAILED|AssertionFailedError|Exception at|expected:|Lint found' "$LOG" | head -60 | while IFS= read -r line; do
+          echo "::error::$line"
+        done
+        for f in ${{ github.workspace }}/V2rayNG/app/build/test-results/*/TEST-*.xml; do
+          [ -f "$f" ] || continue
+          python3 - "$f" <<'PY'
+        import sys, xml.etree.ElementTree as ET
+        for case in ET.parse(sys.argv[1]).getroot().iter('testcase'):
+            for failure in list(case.findall('failure')) + list(case.findall('error')):
+                msg = (failure.get('message') or '').replace('\n', ' ')[:300]
+                print(f"::error title=Test {case.get('classname')}.{case.get('name')}::{msg}")
+        PY
+        done
+
     - name: Check the native libraries in the APKs
       run: |
-        # Looked into as ZIP files: every ABI the Aether core is built for has to carry the core, its
-        # Psiphon client and its pluggable transport, and each APK's native files are listed for the record.
+        # Looked into as ZIP files: every ABI an APK carries has to bring Xray and both HEV builds.
         status=0
         for apk in ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*.apk; do
           entries=$(unzip -Z1 "$apk" | grep '^lib/' || true)
           echo "$(basename "$apk"):"
           echo "$entries" | sed 's/^/  /'
-          for abi in arm64-v8a armeabi-v7a x86_64; do
+          for abi in arm64-v8a armeabi-v7a x86_64 x86; do
             echo "$entries" | grep -q "^lib/$abi/" || continue
-            for lib in libaether.so libpsiphon-tunnel-core.so liblyrebird.so; do
+            for lib in libgojni.so libhev-socks5-tunnel.so libhevsockstun.so; do
               if ! echo "$entries" | grep -qx "lib/$abi/$lib"; then
                 echo "::error::$(basename "$apk") lacks lib/$abi/$lib"
                 status=1
@@ -217,37 +190,47 @@ jobs:
         done
         exit $status
 
+    - name: Verify the APK signatures
+      run: |
+        BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+        for apk in ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*.apk; do
+          n=$(basename "$apk")
+          pkg=$($BT/aapt2 dump badging "$apk" | head -1)
+          cert=$($BT/apksigner verify --print-certs "$apk" | grep -m1 "SHA-256 digest" || true)
+          echo "::notice title=$n::$pkg | $cert"
+        done
+
     - name: Upload arm64-v8a APK
       uses: actions/upload-artifact@v7
       if: ${{  success() }}
       with:
-        name: arm64-v8a
+        name: Griffin-arm64-v8a
         path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*arm64-v8a*.apk
 
     - name: Upload armeabi-v7a APK
       uses: actions/upload-artifact@v7
       if: ${{  success() }}
       with:
-        name: armeabi-v7a
+        name: Griffin-armeabi-v7a
         path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*armeabi-v7a*.apk
 
     - name: Upload x86 APK
       uses: actions/upload-artifact@v7
       if: ${{  success() }}
       with:
-        name: x86-apk
+        name: Griffin-x86
         path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*x86*.apk
 
     - name: Upload universal APK
       uses: actions/upload-artifact@v7
       if: ${{ success() }}
       with:
-        name: universal-apk
+        name: Griffin-universal
         path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*universal*.apk
 
-  sign-and-release:
+  release:
     needs: build
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && inputs.release_tag != ''
 
     steps:
@@ -256,28 +239,31 @@ jobs:
         with:
           path: release
 
-      - name: Sign APK files
+      - name: Collect the APKs
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
-          # Quiet: a plain import prints the key's user ID, name and email, into the public log.
-          printf '%s' "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --quiet --import
-          KEY=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')
           mkdir -p release-files
+          find release -type f -name '*.apk' -exec cp {} release-files/ \;
+          # Detached signatures only when a GPG key is set as a secret.
+          if [ -n "$GPG_PRIVATE_KEY" ]; then
+            # Quiet: a plain import prints the key's user ID, name and email, into the public log.
+            printf '%s' "$GPG_PRIVATE_KEY" | gpg --batch --quiet --import
+            KEY=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')
+            for apk in release-files/*.apk; do
+              gpg --batch --yes --local-user "$KEY" --detach-sign --output "$apk.sig" "$apk"
+            done
+            gpg --armor --export "$KEY" > release-files/Griffin-public-key.asc
+          fi
 
-          find release -type f -name '*.apk' | while read apk; do
-            cp "$apk" release-files/
-            gpg --batch --yes --local-user "$KEY" --detach-sign --output "release-files/$(basename "$apk").sig" "$apk"
-          done
-
-          gpg --armor --export "$KEY" > release-files/PattNG-public-key.asc
-
-      - name: Upload APKs, signatures and public key to release
+      - name: Upload APKs to the release
         uses: svenstaro/upload-release-action@v2
         with:
           file: release-files/*
           tag: ${{ inputs.release_tag }}
-          release_name: PattNG v${{ inputs.release_tag }}
-          body: "."
+          release_name: Griffin v${{ inputs.release_tag }}
+          body: "Griffin v${{ inputs.release_tag }}"
           target_commit: ${{ github.sha }}
           file_glob: true
-          prerelease: true
+          prerelease: false
           overwrite: true

@@ -276,8 +276,13 @@ object MmkvManager {
         if (json.isNullOrBlank()) {
             return null
         }
-        return JsonUtil.fromJsonSafe(json, ProfileItem::class.java)
+        // Griffin: a profile of a type this build does not have, as an Aether one restored from a PattNG backup,
+        // reads with no type, which Gson leaves null behind Kotlin's back; it is skipped rather than crash its reader.
+        return JsonUtil.fromJsonSafe(json, ProfileItem::class.java)?.takeIf { hasType(it) }
     }
+
+    @Suppress("SENSELESS_COMPARISON")
+    private fun hasType(profile: ProfileItem): Boolean = profile.configType != null
 
 
     /**

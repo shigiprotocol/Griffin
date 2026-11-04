@@ -192,13 +192,6 @@ object CoreConfigContextBuilder {
                 .filter { it.hasDialableServer() }
                 .filter { !it.configType.isComplexType() }
                 .toList()
-                .let { members ->
-                    val (kept, leftOut) = withOneAetherProfile(members)
-                    leftOut.forEach {
-                        LogUtil.w(AppConfig.TAG, "Policy group '${config.remarks}' leaves out '${it.remarks}': a second Aether profile with other settings, and one core serves one profile")
-                    }
-                    kept
-                }
         } catch (e: Exception) {
             LogUtil.e(AppConfig.TAG, "Failed to resolve policy group profiles for '${config.remarks}'", e)
             return listOf(config)
@@ -292,12 +285,11 @@ object CoreConfigContextBuilder {
         }
 
     /**
-     * PattNG: whether a proxy chain can go through [profile]: an Aether one, whose core it reaches on the loopback, or
-     * one with a server address, whatever it is: Xray dials localhost or a name without a dot as well, and tells when it
+     * PattNG: whether a proxy chain can go through [profile]: one with a server address, whatever it is: Xray dials localhost or a name without a dot as well, and tells when it
      * cannot. A chain used to leave a hop out without a word when its address did not look like a web address.
      */
     internal fun hasServerAddress(profile: ProfileItem): Boolean =
-        profile.configType == EConfigType.AETHER || !profile.server.isNullOrBlank()
+        !profile.server.isNullOrBlank()
 
     /** PattNG: why a name that finds no profile, or [several], cannot be used, see [ByName]. */
     private fun reasonOf(several: Boolean): CoreConfigContext.UnresolvedName.Reason =
@@ -427,34 +419,7 @@ object CoreConfigContextBuilder {
     internal fun fallbackNameOf(profile: ProfileItem): String? =
         profile.policyGroupFallbackTag?.trim()?.takeIf(String::isNotEmpty)
 
-    /**
-     * A group is filled by a filter rather than by named members, so it can catch several Aether
-     * profiles while one core serves one of them. The first one stays, together with any whose
-     * settings are the same; the others are left out. A chain or a routing rule names its profiles,
-     * so a conflict there is reported instead.
-     */
-    internal fun withOneAetherProfile(members: List<ProfileItem>): Pair<List<ProfileItem>, List<ProfileItem>> {
-        var kept: AetherCore? = null
-        return members.partition { member ->
-            if (member.configType != EConfigType.AETHER) return@partition true
-            val core = AetherCore.of(member)
-            when (kept) {
-                null -> {
-                    kept = core
-                    true
-                }
-
-                core -> true
-                else -> false
-            }
-        }
-    }
-
-    /**
-     * A member the core can dial. An Aether profile has no address of its own to check: its core
-     * finds the endpoint, and the outbound built for it points at that core.
-     */
+    /** A member the core can dial. */
     private fun ProfileItem.hasDialableServer(): Boolean =
-        configType == EConfigType.AETHER ||
-            (server.isNotNullEmpty() && (Utils.isPureIpAddress(server!!) || Utils.isValidUrl(server!!)))
+        server.isNotNullEmpty() && (Utils.isPureIpAddress(server!!) || Utils.isValidUrl(server!!))
 }

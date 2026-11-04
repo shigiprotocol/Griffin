@@ -1,8 +1,7 @@
 package com.v2ray.ang.dto
 
 /**
- * PattNG: what a profile name finds, as a proxy chain names its hops, and an Aether profile and the WARP keys page
- * their exit-node: the [One] profile that has it, [None], when none has it any more, as after it was renamed or
+ * PattNG: what a profile name finds, as a proxy chain names its hops: the [One] profile that has it, [None], when none has it any more, as after it was renamed or
  * deleted, or [Several], among which the name cannot tell the one meant. Names are told apart without the spaces
  * around them, as the lists that offer them show them.
  */

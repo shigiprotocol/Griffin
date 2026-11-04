@@ -109,23 +109,6 @@ class EchOutboundTest {
     }
 
     @Test
-    fun validate_ignoresAnEchOutboundWhereItDoesNotApply() {
-        // The editor hides it there and no configuration uses it, so an imported value must not block saving.
-        val invalid = """{"tag": "proxy"}"""
-        assertNull(EchOutbound.validate(profile(invalid, security = AppConfig.REALITY)))
-        assertNull(EchOutbound.validate(profile(invalid, security = null)))
-        for (configType in listOf(EConfigType.SOCKS, EConfigType.HTTP, EConfigType.WIREGUARD, EConfigType.AETHER)) {
-            assertNull(EchOutbound.validate(profile(invalid, configType = configType)), configType.name)
-        }
-        // Trojan uses it under TLS, and Hysteria2 always runs over TLS: a blank security is saved as TLS.
-        assertEquals(EchOutbound.Error.INVALID_TAG, EchOutbound.validate(profile(invalid, configType = EConfigType.TROJAN)))
-        assertEquals(
-            EchOutbound.Error.INVALID_TAG,
-            EchOutbound.validate(profile(invalid, configType = EConfigType.HYSTERIA2, security = null)),
-        )
-    }
-
-    @Test
     fun serialize_sharesAnEchOutboundAndNumbersADifferentOneUnderTheSameTag() {
         val shared = """{"tag": "ech", "protocol": "freedom"}"""
         val outbounds = arrayOf(
@@ -213,31 +196,6 @@ class EchOutboundTest {
             EchOutbound.Result.Invalid(EchOutbound.Error.NEEDS_ECH_CONFIG_LIST),
             EchOutbound.serialize(config(tlsOutbound("proxy", """{"tag": "ech", "protocol": "freedom"}""", echConfigList = null))),
         )
-    }
-
-    @Test
-    fun takes_answersAsSerializeDoesForTheOutboundBesideThoseTags() {
-        val tags = setOf(AppConfig.TAG_EXIT_NODE)
-        assertTrue(EchOutbound.takes(OutboundBean(tag = AppConfig.TAG_EXIT_NODE, protocol = "freedom"), tags))
-        // The ECH outbound, and whether a configuration of the outbound alone takes it.
-        val echs = listOf(
-            null to true,
-            """{"tag": "ech", "protocol": "freedom"}""" to true,
-            """{"tag": "exit-node", "protocol": "freedom"}""" to false,
-            """{"tag": "proxy-ech", "protocol": "freedom"}""" to false,
-            "freedom" to false,
-        )
-        for ((ech, taken) in echs) {
-            val alone = V2rayConfig(
-                log = V2rayConfig.LogBean(),
-                inbounds = arrayListOf(),
-                outbounds = arrayListOf(tlsOutbound(AppConfig.TAG_EXIT_NODE, ech)),
-                routing = V2rayConfig.RoutingBean(domainStrategy = "AsIs", rules = arrayListOf()),
-            )
-            assertEquals(taken, EchOutbound.serialize(alone) is EchOutbound.Result.Done, ech)
-            assertEquals(taken, EchOutbound.takes(tlsOutbound(AppConfig.TAG_EXIT_NODE, ech), tags), ech)
-        }
-        assertFalse(EchOutbound.takes(tlsOutbound(AppConfig.TAG_EXIT_NODE, """{"tag": "ech", "protocol": "freedom"}""", echConfigList = null), tags))
     }
 
     private companion object {

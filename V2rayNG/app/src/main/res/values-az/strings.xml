@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">PattNG</string>
-    <string name="app_widget_name">Keçid</string>
-    <string name="app_tile_name">Keçid</string>
+    <string name="app_name" translatable="false">Griffin</string>
+    <string name="app_widget_name">Griffin</string>
+    <string name="app_tile_name">Griffin</string>
     <string name="app_tile_first_use">Bu funksiyanı istifadə etməzdən əvvəl tətbiqə profil əlavə edin.</string>
     <string name="navigation_drawer_open">Naviqasiya menyusunu açın</string>
     <string name="navigation_drawer_close">Naviqasiya menyusunu bağlayın</string>
@@ -14,7 +14,7 @@
     <string name="pull_down_to_refresh">Yeniləmək üçün aşağı çəkin!</string>
 
     <!-- Notifications -->
-    <string name="notification_channel_service">PattNG xidməti</string>
+    <string name="notification_channel_service">Griffin xidməti</string>
     <string name="notification_channel_subscription_updates">Abunəlik yenilənmələri</string>
     <string name="notification_channel_connection_checks">Bağlantı yoxlamaları</string>
     <string name="notification_action_stop_v2ray">Dayandır</string>
@@ -266,7 +266,6 @@
     <string name="toast_warning_pref_proxysharing_short">LAN-dan qoşulmalara icazə verilir. Etibarlı şəbəkədə olduğunuzdan əmin olun</string>
 
     <string name="title_pref_socks_port">Yerli proksi portu</string>
-    <string name="title_pref_aether_listen_port">Aether dinləmə portu</string>
     <string name="title_pref_enable_local_proxy">Yerli proksini aktivləşdir</string>
     <string name="summary_pref_enable_local_proxy">Qapalı olduqda, SOCKS proksi əlçatan olmur, buna görə də abunəlik yenilənmələri və bənzər əməliyyatlar proksidən istifadə edə bilmir</string>
     <string name="title_pref_socks_enable_udp" translatable="false">SOCKS5 UDP</string>
@@ -438,8 +437,6 @@
     <string name="title_pref_observatory_least_load_timeout">leastLoad Vaxt Aşımı</string>
     <string name="toast_invalid_observatory_duration">Yanlış müddət. 3m və ya 30s kimi bir dəyərdən istifadə edin.</string>
     <string name="toast_invalid_observatory_sampling">Yanlış müddət. Müsbət ədəddən istifadə edin.</string>
-    <string name="toast_invalid_aether_listen_port">Aether dinləmə portu üçün 1024-dən 65532-yə qədər port istifadə edin</string>
-    <string name="toast_aether_listen_port_local_proxy">Aether dinləmə portu və ondan sonrakı üç port yerli proksi portunu əhatə edə bilməz</string>
 
     <string name="update_check_for_update">Yenilənmələri yoxla</string>
     <string name="update_already_latest_version">Artıq ən son versiyadadır</string>
@@ -574,18 +571,7 @@
     <string name="tasker_blurb_stop">%1$s Dayandır</string>
     <string name="connection_test_empty_message">ətraflı məlumat yoxdur</string>
     <string name="value_unknown">naməlum</string>
-    <string name="aether_lab_protocol">Protokol</string>
-    <string name="aether_lab_transport">Transport</string>
-    <string name="aether_lab_masque_sni">MASQUE SNI</string>
-    <string name="aether_lab_scan_mode">Skan rejimi</string>
-    <string name="aether_lab_obfuscation">Obfuskasiya</string>
-    <string name="aether_lab_ip_version">IP versiyası</string>
-    <string name="aether_lab_exit_final_mask">exit-node finalMask xam JSON, format: { FinalMaskObject }</string>
-    <string name="aether_exit_node_freedom">freedom (standart)</string>
     <string name="label_numbered">%1$s (%2$d)</string>
-    <string name="aether_hint_exit_node">Nüvə bu profilin çıxışı vasitəsilə, proksi zəncirinin bir halqası kimi xaricə qoşulur; aşağıdakı finalMask və dialMode yalnız freedom üçündür</string>
-    <string name="aether_exit_node_unusable">\"%1$s\" exit-node profili heç bir çıxış vermir; başqasını və ya freedom seçin</string>
-    <string name="aether_exit_node_ech_unusable">\"%1$s\" exit-node profilinin echOutbound-u istifadə edilə bilmir; onu həmin profildə düzəldin, başqasını və ya freedom seçin</string>
     <string name="toast_profile_name_not_found">\"%1$s\" adlı profil tapılmadı</string>
     <string name="toast_profile_name_duplicate">\"%1$s\" adlı iki profil tapıldı; zəhmət olmasa birinin adını dəyişin</string>
     <string name="toast_profile_no_server">\"%1$s\" profilinin server ünvanı yoxdur, ona görə proksi zənciri onun üzərindən keçə bilməz</string>
@@ -594,198 +580,9 @@
     <string name="toast_profile_chain_not_hop">\"%1$s\" proksi zənciridir, ona görə başqa proksi zənciri onun üzərindən keçə bilməz; başqa profil seçin</string>
     <string name="toast_profile_custom_not_hop">\"%1$s\" fərdi konfiqurasiyadır, ona görə proksi zənciri onun üzərindən keçə bilməz; başqa profil seçin</string>
     <string name="toast_profile_custom_not_fallback">\"%1$s\" fərdi konfiqurasiyadır və fərdi konfiqurasiya ehtiyat çıxışı ola bilməz; başqa profil seçin</string>
-    <string name="aether_keys_hint_fragment">API adını filtrləyən şəbəkələr üçün WARP API sorğularının ClientHello-sunu hissə-hissə göndərir</string>
-    <string name="aether_lab_fragment">ClientHello-nu hissələrə böl</string>
-    <string name="aether_lab_fragment_size">Hissə ölçüsü (bayt)</string>
-    <string name="aether_lab_fragment_delay">Hissələr arası gecikmə (ms)</string>
-    <string name="aether_lab_wiw_outer">Xarici halqa</string>
-    <string name="aether_lab_wiw_inner">Daxili halqa</string>
-    <string name="aether_hint_endpoint">Skan etmək üçün boş buraxın</string>
-    <string name="aether_hint_gool_peer">WARP-ın təyin etdiyi son nöqtə üçün boş buraxın</string>
-    <string name="aether_action_scan">Son nöqtəni skan et</string>
-    <string name="aether_action_scanning">Skan edilir…</string>
-    <string name="aether_scan_success">Son nöqtə tapıldı</string>
-    <string name="aether_scan_failed">Son nöqtə tapılmadı</string>
-    <string name="aether_invalid_endpoint">IP ünvanı və port istifadə edin və ya skan etmək üçün ünvanı boş buraxın</string>
-    <string name="aether_invalid_hop">Ünvan və port yazın, məsələn 162.159.192.1:2408</string>
-    <string name="aether_same_hop">İki halqanın ünvanları fərqli olmalıdır</string>
-    <string name="aether_invalid_fragment">Ədəd və ya 16-32 kimi aralıq yazın: ölçü 1–4096 bayt, gecikmə 0–1000 ms</string>
-    <string name="aether_listen_port_taken">Aether nüvəsinin dinlədiyi %1$d portunu bu konfiqurasiyanın bir girişi tutur, məsələn, yerli proksi portu və ya Aether dinləmə portundan üç yuxarı olan port; tənzimləmələrdə Aether dinləmə portunu və ya əmrin portlarını dəyişin</string>
-    <string name="aether_secondary_port_taken">Bu konfiqurasiyanın bir girişi artıq %1$d portunda dinləyir; bu, Aether dinləmə portundan üç yuxarı olan və Aether nüvəsinin xaricə qoşulduğu portdur; tənzimləmələrdə Aether dinləmə portunu dəyişin</string>
-    <string name="aether_listen_port_in_use">Aether nüvəsinin dinlədiyi %1$d portu başqa bir tətbiq tərəfindən istifadə olunur; tənzimləmələrdə Aether dinləmə portunu və ya əmrin portlarını dəyişin</string>
-    <string name="aether_secondary_port_in_use">Aether dinləmə portundan üç yuxarı olan və Xray-in Aether nüvəsinin xaricə qoşulması üçün açdığı %1$d portu başqa bir tətbiq tərəfindən istifadə olunur; tənzimləmələrdə Aether dinləmə portunu dəyişin</string>
-    <string name="aether_listen_port_invalid">Aether əmri nüvəyə %1$d üzərində dinləməyi bildirir, lakin bu, port deyil (1-dən 65535-ə qədər); əmrin portlarını dəyişin</string>
-    <string name="aether_listen_address_invalid">Aether əmri %1$s üçün nüvənin qəbul etmədiyi ünvan yazır; ondan sonra IP ünvanı və port yazın, məsələn, 127.0.0.1:20808</string>
-    <string name="aether_listen_address_unreachable">Aether əmri %1$s üçün tətbiqin qoşulmadığı ünvan yazır: tətbiq nüvəyə 127.0.0.1 üzərindən qoşulur, ona görə də ondan sonra 127.0.0.1 (və ya bütün ünvanlar üçün 0.0.0.0) və port yazın</string>
-    <string name="aether_listen_port_shared">Aether əmri nüvəyə iki dinləyicisi ilə %1$d portunda dinləməyi bildirir (əmrin göstərmədiyi dinləyici yenə də dinləyir: tətbiqin qoşulduğu dinləyici Aether dinləmə portunda, digərləri nüvənin standart portunda: 1819, 1820 və ya 1821); hər dinləyiciyə ayrıca port verin</string>
-    <string name="aether_lab_psiphon">Psiphon</string>
-    <string name="aether_lab_psiphon_mode">Psiphon bağlantısı</string>
-    <string name="aether_lab_psiphon_cdn_ips">CDN fronting IP-ləri</string>
-    <string name="aether_lab_psiphon_cdn_sni">CDN fronting server adları</string>
-    <string name="aether_hint_psiphon_list">Vergüllə ayrılmış; daxili siyahı üçün boş buraxın</string>
-    <string name="aether_lab_psiphon_region">Çıxış ölkəsi</string>
-    <string name="aether_psiphon_region_any">İstənilən ölkə</string>
-    <string name="aether_lab_psiphon_bundled_list">Daxili server siyahısından başla</string>
-    <string name="aether_hint_psiphon_bundled_list">Aktiv: Psiphon psiphon_servers.dat faylındakı serverlərə dərhal qoşulur və təzə siyahını yalnız onlar uğursuz olduqda yükləyir. Deaktiv: ilk bağlantıdan əvvəl təzə siyahı yükləyir, ona görə siyahı əlçatan olmalıdır, WARP arxasında olduğu kimi</string>
-    <string name="aether_action_clear_psiphon">Psiphon məlumatlarını təmizlə</string>
-    <string name="aether_hint_clear_psiphon">Psiphon-un öyrəndiyi serverləri və yüklədiyi siyahıları unudur. Növbəti başlanğıc yenidən daxili siyahıdan, yuxarıdakı açar söndürülübsə isə təzə yükləmədən başlayır</string>
-    <string name="aether_log_psiphon_cleared">Psiphon məlumatları təmizləndi</string>
-    <string name="aether_log_psiphon_clear_failed">Psiphon məlumatları təmizlənə bilmədi</string>
-    <string name="aether_psiphon_clear_blocked">Psiphon məlumatlarını təmizləməzdən əvvəl Aether profilini ayırın; işləyən bağlantı onlardan istifadə edir</string>
-    <string name="aether_psiphon_unavailable">Bu versiyada Psiphon müştərisi yoxdur, ona görə Psiphon olan profil qoşula bilməz</string>
-    <string name="aether_psiphon_needs_masque">Psiphon → WARP yalnız MASQUE protokolu ilə işləyir</string>
-    <string name="aether_next_port_taken">Yolda Tor və ya Psiphon olduqda nüvə Aether dinləmə portundan sonrakı portlardan da istifadə edir və onların heç biri tətbiqin yerli proksi portu ola bilməz; tənzimləmələrdə Aether dinləmə portunu dəyişin</string>
-    <string name="aether_lab_tor">Tor</string>
-    <string name="aether_lab_tor_bridges">Körpülər</string>
-    <string name="aether_lab_tor_bridge_lines">Körpü sətirləri</string>
-    <string name="aether_hint_tor_bridge_lines">Hər sətirdə bir, torrc-dəki kimi: obfs4 1.2.3.4:443 FINGERPRINT cert=… iat-mode=0</string>
-    <string name="aether_tor_transports_unavailable">Bu versiyada pluggable transports yoxdur, ona görə Tor körpüləri istifadə edilə bilməz; Tor yalnız bloklanmadığı yerdə qoşulur</string>
-    <string name="aether_tor_needs_masque">Tor → WARP yalnız MASQUE protokolu ilə işləyir</string>
-    <string name="aether_tor_psiphon_conflict">Tor və Psiphon yalnız biri tunelin içində, digəri isə onun ətrafında olduqda birlikdə işləyir</string>
-    <string name="aether_tor_bridges_missing">Ən azı bir körpü sətri yazın və ya başqa körpü tənzimləməsi seçin</string>
-    <string name="aether_lab_ech">Encrypted Client Hello (ECH)</string>
-    <string name="aether_hint_ech">MASQUE əl sıxışmasının server adını gizlədir; istifadə edilə bilən açar olmadan Aether qoşulmur</string>
-    <string name="aether_lab_ech_dns">ECH DNS</string>
-    <string name="aether_lab_ech_domain">ECH domeni</string>
-    <string name="aether_invalid_ech_dns">ECH DNS udp://IP, tcp://IP və ya DNS-over-HTTPS serverinin https:// ünvanı olmalıdır</string>
-    <string name="aether_invalid_ech_domain">ECH domeni domen adı olmalıdır, məsələn cloudflare-ech.com</string>
-    <string name="aether_invalid_masque_sni">MASQUE SNI domen adı olmalıdır, məsələn www.cloudflare.com</string>
-    <string name="aether_lab_dns">Tunel daxilində DNS</string>
-    <string name="aether_hint_dns">Vergüllə ayrılmış; 1.1.1.1 və 1.0.0.1 üçün boş buraxın</string>
-    <string name="aether_invalid_dns">Həlledici ünvanlarını vergüllə ayıraraq yazın, məsələn 1.1.1.1 və ya 10.0.0.1:5353</string>
-    <string name="aether_lab_exit_loc">Çıxış yeri</string>
-    <string name="aether_hint_exit_loc">DE,SE yalnız bunlara icazə verir; !IR,RU bunları rədd edir; boş qalarsa, hamısı qəbul olunur</string>
-    <string name="aether_invalid_exit_loc">Vergüllə ayrılmış iki hərfli ölkə kodları yazın; rədd etmək üçün əvvəlinə ! qoyun</string>
-    <string name="aether_lab_tor_relays">Körpü mənbələri</string>
-    <string name="aether_lab_other_settings">Digər tənzimləmələr</string>
-    <string name="aether_lab_command">Aether əmri</string>
-    <string name="aether_command_custom">Əllə redaktə edilib: bu əmr yazıldığı kimi işləyir və yuxarıdakı tənzimləmələr, Xray-core tənzimləmələri istisna olmaqla, tətbiq olunmur</string>
-    <string name="aether_action_use_settings">Tənzimləmələrdən istifadə et</string>
-    <string name="aether_invalid_command">Əmr Aether nüvəsi üçün arqumentləri göstərməli, dinlədiyi port isə --bind-dan sonra gəlməlidir</string>
-    <string name="aether_unsupported_abi">Aether nüvəsi bu cihaz üçün mövcud deyil</string>
-    <string name="aether_core_stopped">Aether nüvəsi dayandı</string>
-    <string name="aether_core_stopped_no_ech_key">Aether nüvəsi dayandı: ECH aktivdir, lakin istifadə edilə bilən ECH açarı tapılmadı. Açar olmadan server adı açıq şəkildə göndəriləcəkdi.</string>
-    <string name="aether_core_stopped_chain_ended">Aether tunelinin içindəki Tor və ya Psiphon dayandı, ona görə bağlantı dayandırıldı: %1$s</string>
-    <string name="aether_core_connecting">Aether nüvəsi hələ qoşulur</string>
-    <string name="menu_item_import_config_manually_aether">Aether konfiqurasiyasını əllə əlavə et</string>
-    <string name="aether_action_renew_key">Yeni WARP açarları al…</string>
-    <string name="aether_action_renewing_key">Yeni WARP açarları alınır…</string>
-    <string name="aether_log_title">Jurnal</string>
-    <string name="aether_log_empty">Skan nəticələri və WARP açarlarının vəziyyəti burada görünür</string>
-    <string name="aether_log_scan_started">Son nöqtə skan edilir…</string>
-    <string name="aether_log_scan_found">Tapıldı: %1$s</string>
-    <string name="aether_log_scan_found_hops">Xarici halqa %1$s və daxili halqa %2$s tapıldı</string>
-    <string name="aether_log_scan_cancelled">Skan ləğv edildi</string>
-    <string name="aether_log_key_renewing">Yeni WARP açarları qeydiyyatdan keçirilir; istifadə olunan açarlar bütün yeniləri hazır olana qədər yerində qalır…</string>
-    <string name="aether_log_key_renewed">Yeni WARP açarları hazırdır və növbəti bağlantıdan istifadə olunur</string>
-    <string name="aether_log_key_renew_failed">Yeni WARP açarlarının qeydiyyatı uğursuz oldu; mövcud açarlar saxlanıldı</string>
-    <string name="aether_log_key_renew_cancelled">Yeni WARP açarlarının alınması ləğv edildi</string>
-    <string name="aether_log_masque_key_ready">MASQUE açarı: cihaz %1$s, IPv4 %2$s, IPv6 %3$s</string>
-    <string name="aether_log_masque_key_missing">MASQUE açarı: hələ yoxdur; ilk skan və ya bağlantıda qeydiyyatdan keçirilir</string>
-    <string name="aether_log_wireguard_key_ready">WireGuard açarı: cihaz %1$s, IPv4 %2$s, IPv6 %3$s</string>
-    <string name="aether_log_wireguard_key_missing">WireGuard açarı: hələ yoxdur; ilk skan və ya bağlantıda qeydiyyatdan keçirilir</string>
-    <string name="aether_log_outer_key_ready">Xarici halqa açarı: cihaz %1$s, IPv4 %2$s, IPv6 %3$s</string>
-    <string name="aether_log_outer_key_missing">Xarici halqa açarı: hələ yoxdur; ilk skan və ya bağlantıda qeydiyyatdan keçirilir</string>
-    <string name="aether_log_inner_key_ready">Daxili halqa açarı: cihaz %1$s, IPv4 %2$s, IPv6 %3$s</string>
-    <string name="aether_log_inner_key_missing">Daxili halqa açarı: hələ yoxdur; ilk skan və ya bağlantıda qeydiyyatdan keçirilir</string>
-    <string name="aether_log_wireguard_inner_key_ready">WireGuard daxili halqa açarı: cihaz %1$s, IPv4 %2$s, IPv6 %3$s</string>
-    <string name="aether_log_wireguard_inner_key_missing">WireGuard daxili halqa açarı: hələ yoxdur; ilk skan və ya bağlantıda qeydiyyatdan keçirilir</string>
-    <string name="aether_log_masque_inner_key_ready">MASQUE daxili halqa açarı: cihaz %1$s, IPv4 %2$s, IPv6 %3$s</string>
-    <string name="aether_log_masque_inner_key_missing">MASQUE daxili halqa açarı: hələ yoxdur; ilk skan və ya bağlantıda qeydiyyatdan keçirilir</string>
-    <string name="aether_log_gool_key_ready">WireGuard over MASQUE açarı: cihaz %1$s, IPv4 %2$s, IPv6 %3$s</string>
-    <string name="aether_log_gool_key_missing">WireGuard over MASQUE açarı: hələ yoxdur; ilk skan və ya bağlantıda qeydiyyatdan keçirilir</string>
-    <string name="aether_renew_blocked">Bu açarları almazdan əvvəl Aether profilini ayırın; işləyən bağlantı onlardan istifadə edir</string>
-    <string name="aether_action_get_keys">Yeni WARP açarları al</string>
-    <string name="aether_keys_lab_kind">Hansı açarlar yenilənsin</string>
-    <string name="aether_keys_kind_all">Hamısı</string>
-    <string name="aether_keys_lab_enroll_address">API ünvanı</string>
-    <string name="aether_keys_hint_ech">WARP API sorğularının server adını gizlədir; istifadə edilə bilən ECH açarı olmadan heç bir WARP açarı sorğulanmır</string>
-    <string name="aether_lab_fingerprint">Barmaq izi</string>
-    <string name="aether_keys_invalid_enroll_address">API ünvanı portlu və ya portsuz IP ünvanı və ya domen adı olmalıdır, məsələn 188.114.97.6:443 və ya [2606:4700::1]:8443</string>
-    <string name="aether_keys_lab_api_sni">API server adı (SNI)</string>
-    <string name="aether_keys_lab_api_host">API hostu</string>
-    <string name="aether_keys_hint_enroll_address">API server adının ünvanı üçün boş buraxın</string>
-    <string name="aether_keys_hint_api_sni">API hostu üçün boş buraxın</string>
-    <string name="aether_keys_hint_api_host">api.devices.cloudflare.com üçün boş buraxın; o cavab verməsə və server adı da boşdursa, api.cloudflareclient.com işlədilir. Cloudflare hostdan fərqli server adını qəbul etmir</string>
-    <string name="aether_keys_invalid_api_sni">API server adı domen adı olmalıdır, məsələn api.devices.cloudflare.com</string>
-    <string name="aether_keys_invalid_api_host">API hostu domen adı olmalıdır, məsələn api.devices.cloudflare.com</string>
-    <string name="aether_keys_invalid_command">Əmr açarları qeydiyyatdan keçirməlidir: --register, ardınca all, wg, masque, mim, gool-classic (WARP-in-WARP) və ya gool (WireGuard over MASQUE)</string>
-    <string name="aether_keys_log_empty">Nüvənin çıxış məlumatları və WARP açarları burada görünür</string>
-    <string name="aether_scan_blocked">Skan etməzdən əvvəl Aether profilini ayırın; skan işləyən bağlantının açarı ilə ikinci tunel açardı</string>
-    <string name="aether_keys_missing">Tələb olunan WARP açarınız yoxdur; zəhmət olmasa əvvəlcə onu alın</string>
-    <string name="aether_action_save_anyway">Yenə də saxla</string>
-    <string name="aether_action_scan_anyway">Yenə də skan et</string>
-    <string name="aether_chain_one_profile">Proksi zəncirində yalnız bir Aether profili ola bilər</string>
-    <string name="aether_exit_node_name_taken">Burada marşrutlaşdırma exit-node adlı profildən istifadə edir, exit-node isə Aether nüvəsinin xaricə qoşulduğu çıxışın adıdır; həmin profilin adını dəyişin</string>
-    <string name="aether_chain_hop_missing">Bu proksi zəncirindəki Aether profilinin xaricə qoşulduğu halqa qurula bilmədi və Aether nüvəsi internetə onsuz çıxardı</string>
     <string name="config_main_outbound_missing">Seçilmiş profil qurula bilmədi və bütün trafik onsuz birbaşa internetə çıxardı; onun tənzimləmələrini yoxlayın</string>
     <string name="config_routing_target_unbuilt">Marşrutlaşdırma qaydasının trafik göndərdiyi \"%1$s\" profili qurula bilmədi; onu düzəldin və ya ondan istifadə edən qaydaları söndürün</string>
     <string name="config_group_fallback_unbuilt">Siyasət qrupunun ehtiyat kimi istifadə etdiyi \"%1$s\" profili qurula bilmədi; onu düzəldin və ya qrup üçün başqa ehtiyat çıxışı seçin</string>
-    <string name="aether_config_single_profile">Konfiqurasiya yalnız bir Aether profilindən istifadə edə bilər</string>
-    <string name="aether_config_two_exits">Burada bir Aether nüvəsi xaricə iki yolla qoşulmalı olardı: eyni tunel həm təkbaşına, həm də proksi zəncirinin halqası arxasında, iki fərqli halqanın arxasında və ya iki fərqli exit-node tənzimləməsi ilə istifadə olunur</string>
-    <string name="aether_custom_no_outbound">Konfiqurasiyanın heç bir SOCKS çıxışı Aether əmrinin dinlədiyi %1$s:%2$d ünvanına qoşulmur</string>
-    <string name="aether_custom_exit_node_selected">Bu konfiqurasiyanın balanslaşdırıcısı və ya observatory-si tag-ları %1$s ilə başlayan çıxışları seçir; bura Aether nüvəsinin xaricə qoşulduğu exit-node çıxışı da daxildir; həmin seçicini dəyişin</string>
-    <string name="aether_custom_invalid_command">aetherCommand Aether nüvəsinin əmr sətri olmalıdır, mətn kimi, dinlədiyi ünvan isə --bind-dan sonra gəlməlidir: %1$s</string>
-    <string name="title_aether_core">Aether nüvəsi</string>
-    <string name="summary_aether_core">CluvexStudio-nun WARP müştərisi, AGPL-3.0 lisenziyası ilə daxil edilib. Mənbə kodunu açmaq üçün toxunun.</string>
-    <string-array name="aether_scan_entries">
-        <item>Turbo</item>
-        <item>Balanslı</item>
-        <item>Hərtərəfli</item>
-        <item>Təsdiqlənmiş</item>
-        <item>Etibarlı</item>
-    </string-array>
-    <string-array name="aether_psiphon_entries">
-        <item>Söndürülüb</item>
-        <item>WARP → Psiphon</item>
-        <item>Psiphon → WARP</item>
-        <item>Yalnız Psiphon</item>
-    </string-array>
-    <string name="aether_lab_psiphon_cdn_sets">Skan ediləcək CDN kənar siyahıları</string>
-    <string name="aether_hint_psiphon_cdn_sets">Fronting skanının sınayacağı, Psiphon-a daxil edilmiş kənar siyahıları. Heç biri seçilməyibsə, hamısı sınanır; öz IP-ləriniz də varsa, bu siyahılar onlardan sonra sınanır</string>
-    <string name="aether_psiphon_cdn_sets_all">Psiphon-a daxil edilmiş bütün siyahılar</string>
-    <string-array name="aether_psiphon_cdn_set_entries">
-        <item>Cloudflare</item>
-        <item>Fastly</item>
-        <item>CloudFront</item>
-        <item>Akamai (Psiphon siyahısı)</item>
-        <item>Bunny (Psiphon siyahısı)</item>
-        <item>Vercel</item>
-        <item>GitHub</item>
-        <item>Seçilmiş fronting kənarları</item>
-        <item>Köhnə Android əvəzləmələri</item>
-    </string-array>
-    <string-array name="aether_psiphon_mode_entries">
-        <item>Avtomatik</item>
-        <item>Yalnız CDN fronting</item>
-        <item>Yalnız birbaşa</item>
-    </string-array>
-    <string-array name="aether_tor_entries">
-        <item>Söndürülüb</item>
-        <item>WARP → Tor</item>
-        <item>Tor → WARP</item>
-        <item>Yalnız Tor</item>
-    </string-array>
-    <string-array name="aether_tor_bridges_entries">
-        <item>Tor bloklandıqda</item>
-        <item>Əvvəldən</item>
-        <item>Heç vaxt</item>
-        <item>Öz körpü sətirlərim</item>
-    </string-array>
-    <string-array name="aether_tor_relays_entries">
-        <item>bridgedb və açıq releylər</item>
-        <item>Yalnız açıq releylər</item>
-        <item>Yalnız bridgedb</item>
-    </string-array>
-    <string-array name="aether_obfuscation_entries">
-        <item>Avtomatik</item>
-        <item>Söndürülüb</item>
-        <item>Yüngül</item>
-        <item>Firewall</item>
-        <item>Balanslı</item>
-        <item>GFW</item>
-        <item>Aqressiv</item>
-    </string-array>
     <string name="sub_info_open_support">Dəstək linkini aç</string>
     <string name="sub_info_open_page">Abunəlik səhifəsini aç</string>
     <string name="sub_info_traffic" translatable="false">%1$s / %2$s</string>

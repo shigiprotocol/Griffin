@@ -121,18 +121,6 @@ class ServerProxyChainViewModelTest {
     }
 
     @Test
-    fun aSecondAetherMemberIsTold() {
-        source.names.add("warp", EConfigType.AETHER, server = null)
-        source.names.add("warp 2", EConfigType.AETHER, server = null)
-        val viewModel = viewModel()
-
-        viewModel.save("chain", listOf("warp", "entry", "warp 2"))
-
-        assertEquals(refused(R.string.aether_chain_one_profile), viewModel.outcome.value)
-        assertTrue(source.saves.isEmpty())
-    }
-
-    @Test
     fun aNewChainIsStoredOnceAndALaterSaveWritesOverIt() {
         val viewModel = viewModel(subscriptionId = "sub")
 

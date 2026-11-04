@@ -64,25 +64,6 @@ object AppConfig {
     const val PREF_SOCKS_PASSWORD = "pref_socks_password"
     const val PREF_SOCKS_ENABLE_UDP = "pref_socks_enable_udp"
 
-    /** PattNG: the loopback port every Aether core listens on, whatever its profile; see SettingsManager.getAetherListenPort. */
-    const val PREF_AETHER_LISTEN_PORT = "pref_aether_listen_port"
-
-    /** PattNG: the settings of the page that gets new WARP keys, which no profile shares; see AetherKeysSettings. */
-    const val PREF_AETHER_KEYS_KIND = "pref_aether_keys_kind"
-    const val PREF_AETHER_KEYS_ENROLL_ADDRESS = "pref_aether_keys_enroll_address"
-    const val PREF_AETHER_KEYS_API_SNI = "pref_aether_keys_api_sni"
-    const val PREF_AETHER_KEYS_API_HOST = "pref_aether_keys_api_host"
-    const val PREF_AETHER_KEYS_FRAGMENT = "pref_aether_keys_fragment"
-    const val PREF_AETHER_KEYS_FRAGMENT_SIZE = "pref_aether_keys_fragment_size"
-    const val PREF_AETHER_KEYS_FRAGMENT_DELAY = "pref_aether_keys_fragment_delay"
-    const val PREF_AETHER_KEYS_ECH = "pref_aether_keys_ech"
-    const val PREF_AETHER_KEYS_ECH_DNS = "pref_aether_keys_ech_dns"
-    const val PREF_AETHER_KEYS_ECH_DOMAIN = "pref_aether_keys_ech_domain"
-    const val PREF_AETHER_KEYS_FINGERPRINT = "pref_aether_keys_fingerprint"
-    const val PREF_AETHER_KEYS_EXIT_NODE = "pref_aether_keys_exit_node"
-    const val PREF_AETHER_KEYS_FINAL_MASK = "pref_aether_keys_final_mask"
-    const val PREF_AETHER_KEYS_DIAL_MODE = "pref_aether_keys_dial_mode"
-    const val PREF_AETHER_KEYS_COMMAND = "pref_aether_keys_command"
     const val PREF_REMOTE_DNS = "pref_remote_dns"
     const val PREF_DOMESTIC_DNS = "pref_domestic_dns"
     const val PREF_DNS_HOSTS = "pref_dns_hosts"
@@ -97,8 +78,6 @@ object AppConfig {
     const val PREF_CHECK_UPDATE_PRE_RELEASE = "pref_check_update_pre_release"
     const val PREF_GEO_FILES_SOURCES = "pref_geo_files_sources"
 
-    /** The exit countries Psiphon last reported it can leave from, ISO codes comma separated; see PsiphonServerList. */
-    const val PREF_PSIPHON_REGIONS = "pref_psiphon_regions"
     const val PREF_USE_HEV_TUNNEL = "pref_use_hev_tunnel_v2"
     const val PREF_HEV_TUNNEL_LOGLEVEL = "pref_hev_tunnel_loglevel"
     const val PREF_HEV_TUNNEL_RW_TIMEOUT = "pref_hev_tunnel_rw_timeout_v2"
@@ -138,10 +117,6 @@ object AppConfig {
     const val TAG_BALANCER = "balancer-main"
     const val TAG_BALANCER_PRE = "balancer"
 
-    /** PattNG: the inbound the Aether core dials out through, and the outbound its traffic leaves Xray by. */
-    const val TAG_SECONDARY_SOCKS = "secondary-socks"
-    const val TAG_EXIT_NODE = "exit-node"
-
     /** Network-related constants. */
     const val UPLINK = "uplink"
     const val DOWNLINK = "downlink"
@@ -151,10 +126,9 @@ object AppConfig {
     const val GITHUB_RAW_URL = "https://raw.githubusercontent.com"
     const val GITHUB_DOWNLOAD_URL = "$GITHUB_URL/%s/releases/latest/download"
     const val ANDROID_PACKAGE_NAME_LIST_URL = "$GITHUB_RAW_URL/2dust/androidpackagenamelist/master/proxy.txt"
-    const val APP_URL = "$GITHUB_URL/patterniha/PattNG"
-    const val APP_API_URL = "https://api.github.com/repos/patterniha/PattNG/releases"
+    const val APP_URL = "$GITHUB_URL/shigiprotocol/Griffin"
+    const val APP_API_URL = "https://api.github.com/repos/shigiprotocol/Griffin/releases"
     const val APP_ISSUES_URL = "$APP_URL/issues"
-    const val AETHER_URL = "$GITHUB_URL/CluvexStudio/aether"
     const val APP_WIKI_MODE = "$APP_URL/wiki/Mode"
     const val APP_PRIVACY_POLICY = "$GITHUB_RAW_URL/2dust/v2rayNG/master/CR.md"
     const val APP_PROMOTION_URL = "aHR0cHM6Ly85LjIzNDQ1Ni54eXovYWJjLmh0bWw="
@@ -169,6 +143,12 @@ object AppConfig {
 
     //    const val IP_API_URL = "https://speed.cloudflare.com/meta"
     const val IP_API_URL = "https://api.ip.sb/geoip"
+
+    /** Griffin: where the exit IP is asked for when the IP service of the settings gives none. */
+    val IP_TRACE_URLS = listOf("https://1.1.1.1/cdn-cgi/trace", "https://www.cloudflare.com/cdn-cgi/trace")
+
+    /** Griffin: the request id of the connection test the service runs by itself once it has connected. */
+    const val AUTO_CONNECTION_TEST_ID = "auto-connection-test"
 
     /** DNS server addresses. */
     const val DNS_PROXY = "https://8.8.8.8/dns-query"
@@ -185,27 +165,9 @@ object AppConfig {
     const val GEOIP_ONLY_CN_PRIVATE_DAT = "geoip-only-cn-private.dat"
     const val GEOIP_ONLY_CN_PRIVATE_URL = "$GITHUB_RAW_URL/Loyalsoldier/geoip/release/$GEOIP_ONLY_CN_PRIVATE_DAT"
 
-    /** Psiphon's signed server list, as its client downloads it: shipped by every build and kept beside the geo files. */
-    const val PSIPHON_SERVERS_DAT = "psiphon_servers.dat"
-    const val PSIPHON_SERVERS_URL = "https://s3.amazonaws.com//psiphon/web/mjr4-p23r-puwl/server_list_compressed"
-
-    /** When the bundled list was published, as the build recorded it from the download: seconds since the epoch. */
-    const val PSIPHON_SERVERS_STAMP = "psiphon_servers.stamp"
-
     /** Ports and addresses for various services. */
     const val PORT_LOCAL_DNS = "10853"
     const val PORT_SOCKS = "10808"
-    const val PORT_AETHER_SOCKS = "10819"
-
-    /** PattNG: where the Aether core asks for the ECH key, and the domain whose key it takes, unless a profile names others. */
-    const val AETHER_ECH_DNS = "udp://1.1.1.1"
-    const val AETHER_ECH_DOMAIN = "cloudflare-ech.com"
-
-    /**
-     * PattNG: the server name the MASQUE handshakes of the Aether core put in their ClientHello, unless a profile names
-     * another; the core's own default as well. The HTTP host of the CONNECT request stays the core's.
-     */
-    const val AETHER_MASQUE_SNI = "www.cloudflare.com"
 
     const val WIREGUARD_LOCAL_ADDRESS_V4 = "172.16.0.2/32"
     const val WIREGUARD_LOCAL_ADDRESS_V6 = "2606:4700:110:8f81:d551:a0:532e:a2b3/128"
@@ -279,7 +241,6 @@ object AppConfig {
     const val HYSTERIA2 = "hysteria2://"
     const val HY2 = "hy2://"
     const val V2RAYNFMTS = "v2rayn://"
-    const val AETHER = "aether://"
 
     /** Give a good name to this, IDK*/
     const val VPN = "VPN"
@@ -338,11 +299,6 @@ object AppConfig {
     /** Xray's default targetStrategy, and the default of most profile types; an outbound with it carries none. */
     const val TARGET_STRATEGY_AS_IS = "AsIs"
 
-    /**
-     * The default targetStrategy of an Aether profile whose traffic leaves through WARP, see
-     * CoreOutboundBuilder.defaultTargetStrategy.
-     */
-    const val TARGET_STRATEGY_FORCE_IPV4V6 = "ForceIPv4v6"
     const val TLS = "tls"
     const val REALITY = "reality"
     const val HEADER_TYPE_HTTP = "http"

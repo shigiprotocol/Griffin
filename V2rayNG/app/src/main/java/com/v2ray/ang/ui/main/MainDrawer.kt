@@ -85,10 +85,10 @@ fun MainDrawerContent(drawerState: DrawerState, onNavigate: (MainDestination) ->
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    // PattNG: full-color circular logo, no dark-mode tint (tinting a photo logo
+                    // Griffin: full-color circular logo, no dark-mode tint (tinting a photo logo
                     // would flatten it into a white disc)
                     Image(
-                        painter = painterResource(R.drawable.ic_pattng_logo),
+                        painter = painterResource(R.drawable.ic_griffin_logo),
                         contentDescription = null,
                         modifier = Modifier.size(120.dp)
                     )

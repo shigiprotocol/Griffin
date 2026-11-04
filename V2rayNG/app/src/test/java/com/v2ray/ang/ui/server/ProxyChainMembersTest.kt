@@ -16,16 +16,6 @@ class ProxyChainMembersTest {
     private fun dialled(type: EConfigType) = ProfileItem.create(type).apply { server = "203.0.113.7"; serverPort = "443" }
 
     @Test
-    fun aChainIsSavedWhenEachMemberNamesOneProfileAndOneAtMostIsAether() {
-        val profiles = mapOf(
-            "entry" to dialled(EConfigType.VLESS),
-            "warp" to ProfileItem.create(EConfigType.AETHER),
-            "exit" to dialled(EConfigType.TROJAN),
-        )
-        assertNull(proxyChainProblem(listOf("entry", "warp", "exit")) { name, _ -> profiles[name]?.let { ByName.One(it) } ?: ByName.None })
-    }
-
-    @Test
     fun aMemberNoProfileHasAnyMoreOrSeveralHaveOrWithoutAServerIsToldByItsName() {
         val found = mapOf<String, ByName<ProfileItem>>(
             "entry" to ByName.One(dialled(EConfigType.VLESS)),
@@ -42,16 +32,6 @@ class ProxyChainMembersTest {
             val atStart = CoreConfigContextBuilder.proxyChainHops(members) { name, _ -> found[name] ?: ByName.None }.second!!
             assertEquals(ProxyChainProblem.Unresolved(atStart.name, atStart.reason.message), problem(*members.toTypedArray()), members.toString())
         }
-    }
-
-    @Test
-    fun aSecondAetherMemberIsTold() {
-        val found = mapOf<String, ByName<ProfileItem>>(
-            "warp" to ByName.One(ProfileItem.create(EConfigType.AETHER)),
-            "warp 2" to ByName.One(ProfileItem.create(EConfigType.AETHER)),
-            "entry" to ByName.One(dialled(EConfigType.VLESS)),
-        )
-        assertEquals(ProxyChainProblem.SecondAether, proxyChainProblem(listOf("warp", "entry", "warp 2")) { name, _ -> found.getValue(name) })
     }
 
     @Test
@@ -120,14 +100,4 @@ class ProxyChainMembersTest {
         )
     }
 
-    @Test
-    fun anAetherMemberCanStandAnywhereButOnlyOnce() {
-        assertFalse(hasSecondAetherMember(listOf(EConfigType.AETHER, EConfigType.VLESS)))
-        assertFalse(hasSecondAetherMember(listOf(EConfigType.VLESS, EConfigType.AETHER)))
-        assertFalse(hasSecondAetherMember(listOf(EConfigType.VLESS, EConfigType.AETHER, EConfigType.TROJAN)))
-        assertFalse(hasSecondAetherMember(listOf(EConfigType.VLESS, EConfigType.TROJAN)))
-        assertFalse(hasSecondAetherMember(listOf(null, EConfigType.VLESS)))
-        assertTrue(hasSecondAetherMember(listOf(EConfigType.AETHER, EConfigType.AETHER)))
-        assertTrue(hasSecondAetherMember(listOf(EConfigType.AETHER, EConfigType.VLESS, EConfigType.AETHER)))
-    }
 }

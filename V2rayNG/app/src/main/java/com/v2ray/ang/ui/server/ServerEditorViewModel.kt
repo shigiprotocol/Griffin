@@ -6,8 +6,8 @@ import com.v2ray.ang.enums.EConfigType
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * PattNG: the save and the delete of the editor of a profile the screen builds whole from what it shows, as a VLESS or
- * an Aether one, see [BaseServerActivity] and [ProfileEditorViewModel]: unlike a proxy chain's, whose screen sets a few
+ * PattNG: the save and the delete of the editor of a profile the screen builds whole from what it shows, as a VLESS
+ * one, see [BaseServerActivity] and [ProfileEditorViewModel]: unlike a proxy chain's, whose screen sets a few
  * fields on the profile as stored, the profile is stored as built.
  */
 class ServerEditorViewModel(

@@ -12,8 +12,11 @@ import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.core.CoreServiceManager
 import com.v2ray.ang.core.LauncherManager
+import com.v2ray.ang.dto.ConnectionTestResult
+import com.v2ray.ang.extension.serializable
 import com.v2ray.ang.handler.AppLocaleManager
 import com.v2ray.ang.helper.MessageHelper
+import com.v2ray.ang.util.CountryFlag
 import com.v2ray.ang.util.LogUtil
 import com.v2ray.ang.util.Utils
 import java.lang.ref.SoftReference
@@ -33,12 +36,26 @@ class QSTileService : TileService() {
         if (state == Tile.STATE_INACTIVE) {
             qsTile?.state = Tile.STATE_INACTIVE
             qsTile?.label = getString(R.string.app_name)
+            qsTile?.subtitle = null
         } else if (state == Tile.STATE_ACTIVE) {
             qsTile?.state = Tile.STATE_ACTIVE
             qsTile?.label = CoreServiceManager.getRunningServerName()
         }
 
         qsTile?.updateTile()
+    }
+
+    /**
+     * Griffin: shows the exit of a successful connection test under the server name: its flag and country, and the
+     * delay. Tile.subtitle is there from API 29, the app's minSdk.
+     */
+    fun setConnectionTest(result: ConnectionTestResult) {
+        val tile = qsTile ?: return
+        if (tile.state != Tile.STATE_ACTIVE || result.delayMillis < 0) return
+        val delay = getString(R.string.server_test_delay_value, result.delayMillis)
+        val place = CountryFlag.emojiOf(result.country)?.let { "$it ${result.country?.trim()?.uppercase()}" }
+        tile.subtitle = listOfNotNull(place, delay).joinToString(" • ")
+        tile.updateTile()
     }
 
     /**
@@ -115,6 +132,10 @@ class QSTileService : TileService() {
 
                 AppConfig.MSG_STATE_STOP_SUCCESS -> {
                     context?.setState(Tile.STATE_INACTIVE)
+                }
+
+                AppConfig.MSG_MEASURE_DELAY_RESULT -> {
+                    intent?.serializable<ConnectionTestResult>("content")?.let { context?.setConnectionTest(it) }
                 }
             }
         }

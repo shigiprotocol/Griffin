@@ -51,9 +51,6 @@ class SubEditViewModel(
         val neighbors = listOfNotNull(edited.nextProfile, edited.prevProfile).map { it.trim() }.filter { it.isNotEmpty() }
         when (val problem = proxyChainProblem(neighbors) { name, takes -> source.withProfileNames(takes) { find -> find(name) } }) {
             is ProxyChainProblem.Unresolved -> return@launchSave EditorOutcome.Refused(problem.message, listOf(problem.name))
-            // The previous and the next profile chain every profile of the subscription. Either can be Aether, but not
-            // both: one core runs, so a chain can have one Aether profile.
-            ProxyChainProblem.SecondAether -> return@launchSave EditorOutcome.Refused(R.string.aether_chain_one_profile)
             null -> Unit
         }
 

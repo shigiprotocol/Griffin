@@ -5,10 +5,6 @@ import com.v2ray.ang.AppConfig
 import com.v2ray.ang.enums.EConfigType
 
 data class V2rayConfig(
-    /*Aether: the command line of the core the app runs for this configuration, first so that it heads the
-      exported file, where a person reads it and a custom configuration is read from it; Xray ignores the key.
-      Untyped, so a hand-written value of any shape still loads and is checked when the core is needed.*/
-    var aetherCommand: Any? = null,
     var remarks: String? = null,
     var stats: Any? = null,
     val log: LogBean,

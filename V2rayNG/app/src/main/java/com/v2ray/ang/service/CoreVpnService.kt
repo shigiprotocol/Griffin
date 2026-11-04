@@ -60,8 +60,8 @@ class CoreVpnService : VpnService(), ServiceControl {
         // going through stopAllService() (e.g. when killed unexpectedly). isRunning is
         // set to false at the start of stopAllService(), so this guard prevents a double-close.
         if (isRunning) {
-            // The interface is not all that would outlive the service then: tun2socks, Xray and the
-            // Aether core run on in this process, as the other two services stop them in onDestroy.
+            // The interface is not all that would outlive the service then: tun2socks and Xray run on
+            // in this process, as the other two services stop them in onDestroy.
             // The service is going down already, so this is the teardown without stopSelf().
             stopAllService(isForced = false)
             try {
@@ -168,7 +168,7 @@ class CoreVpnService : VpnService(), ServiceControl {
 
     /**
      * Ends a start whose tun2socks is not there. The interface is up by then and takes every packet
-     * of the device, so a start that went on would leave Xray, the Aether core and the main screen
+     * of the device, so a start that went on would leave Xray and the main screen
      * connected over a tunnel nothing reads.
      */
     private fun failTun2Socks(what: String) {

@@ -7,6 +7,7 @@ import android.app.Service
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.v2ray.ang.R
 import com.v2ray.ang.enums.NotificationChannelType
 import com.v2ray.ang.handler.AppLocaleManager
@@ -174,6 +175,7 @@ object NotificationHelper {
         val displayTitle = title.ifEmpty { context.getString(R.string.app_name) }
         return NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_stat_name)
+            .setColor(ContextCompat.getColor(context, R.color.griffin_orange))
             .setContentTitle(displayTitle)
             .setContentText(content)
             .setOngoing(false)

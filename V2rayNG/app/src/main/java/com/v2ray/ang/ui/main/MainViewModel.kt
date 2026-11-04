@@ -20,6 +20,7 @@ import com.v2ray.ang.extension.matchesPattern
 import com.v2ray.ang.extension.moveItem
 import com.v2ray.ang.handler.SubscriptionInfoParser
 import com.v2ray.ang.ui.base.BaseViewModel
+import com.v2ray.ang.util.CountryFlag
 import com.v2ray.ang.util.LogUtil
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -144,17 +145,6 @@ class MainViewModel(
 
     private val initialPageReady = CompletableDeferred<Unit>()
 
-    /**
-     * PattNG: the names the Aether editor gives the WARP protocols, which the rows of Aether profiles show. Declared
-     * before init, whose work off the main thread reads it: a delegate declared after it may not be there yet.
-     */
-    private val aetherProtocolLabel by lazy {
-        aetherProtocolLabels(
-            dataSource.getStringArray(R.array.aether_protocol_entries),
-            dataSource.getStringArray(R.array.aether_protocol_values),
-        )
-    }
-
     // ---------- Service events ----------
     init {
         collectServiceEvents()
@@ -176,11 +166,14 @@ class MainViewModel(
             MainServiceEvent.StateStartSuccess -> {
                 toastSuccess(R.string.toast_services_success)
                 updateRunningState(true)
+                // Griffin: the service tests the connection by itself now; its result replaces this, see
+                // CoreServiceManager.scheduleAutoConnectionTest.
+                _uiState.update { it.copy(status = autoTestStartedStatus(it.status, it.isRunning, testRequests.isTesting)) }
             }
 
             is MainServiceEvent.StateStartFailure -> {
-                // The daemon attaches a reason only when it is a localized resource string, e.g.
-                // the Aether core stopping or missing on this ABI; the generic text is the fallback.
+                // The daemon attaches a reason only when it is a localized resource string;
+                // the generic text is the fallback.
                 if (!event.message.isNullOrBlank()) {
                     toastError(event.message)
                 } else {
@@ -197,6 +190,10 @@ class MainViewModel(
 
             MainServiceEvent.StateStopSuccess -> updateRunningState(false)
             is MainServiceEvent.MeasureDelayResult -> {
+                if (event.requestId == AppConfig.AUTO_CONNECTION_TEST_ID) {
+                    _uiState.update { it.copy(status = autoTestResultStatus(it.status, it.isRunning, testRequests.isTesting, event.result)) }
+                    return
+                }
                 if (!uiState.value.isRunning || !testRequests.completeCurrent(event.requestId)) return
                 _uiState.update { it.copy(isTesting = testRequests.isTesting, status = MainStatus.ConnectionTest(event.result)) }
             }
@@ -224,6 +221,10 @@ class MainViewModel(
             }
 
             is MainServiceEvent.MeasureDelayCancelled -> {
+                if (event.requestId == AppConfig.AUTO_CONNECTION_TEST_ID) {
+                    _uiState.update { it.copy(status = autoTestCancelledStatus(it.status, it.isRunning, testRequests.isTesting)) }
+                    return
+                }
                 if (testRequests.completeCurrent(event.requestId)) resetTestStatus()
             }
 
@@ -296,12 +297,10 @@ class MainViewModel(
             dataSource.getString(R.string.connection_test_error, detail)
         }
 
-        if (result.delayMillis < 0 || (result.country == null && result.ipAddress == null)) {
-            return status
-        }
-
-        val unknown = dataSource.getString(R.string.value_unknown)
-        return "$status\n(${result.country ?: unknown}) ${result.ipAddress ?: unknown}"
+        if (result.delayMillis < 0) return status
+        // Griffin: the exit's flag and country beside its IP, as far as the IP service told them.
+        val exit = CountryFlag.exitLabel(result.country, result.ipAddress) ?: return status
+        return "$exit\n$status"
     }
 
     // ---------- Public state accessors ----------
@@ -516,7 +515,6 @@ class MainViewModel(
             buildServerRowUiModel(
                 server = server,
                 subscriptionRemarks = subscriptionRemarks[server.profile.subscriptionId].orEmpty(),
-                aetherProtocolLabel = aetherProtocolLabel,
             )
         }
     }
@@ -1160,6 +1158,24 @@ class MainViewModel(
         ): MainStatus =
             if (!clearTestingText && wasRunning == running && current !is MainStatus.Connecting) current
             else if (running) MainStatus.Connected else MainStatus.Disconnected
+
+        /**
+         * Griffin: the status once the service started, which tests the connection by itself: testing, unless the
+         * service is not running or a test of the user's is under way, whose status stays.
+         */
+        internal fun autoTestStartedStatus(current: MainStatus, running: Boolean, testing: Boolean): MainStatus =
+            if (running && !testing) MainStatus.Testing else current
+
+        /**
+         * Griffin: the status once the service's own connection test reports [result]: it is shown while the service
+         * runs and no test of the user's is under way, which has the status line to itself.
+         */
+        internal fun autoTestResultStatus(current: MainStatus, running: Boolean, testing: Boolean, result: ConnectionTestResult): MainStatus =
+            if (running && !testing) MainStatus.ConnectionTest(result) else current
+
+        /** Griffin: the status once the service's own connection test was cancelled: a testing status it left ends. */
+        internal fun autoTestCancelledStatus(current: MainStatus, running: Boolean, testing: Boolean): MainStatus =
+            if (running && !testing && current == MainStatus.Testing) MainStatus.Connected else current
     }
 
     // ---------- Factory ----------

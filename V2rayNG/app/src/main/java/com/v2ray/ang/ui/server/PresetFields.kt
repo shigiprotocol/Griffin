@@ -30,7 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * The finalMask field of the server editors and of the exit-node on the Aether pages: JSON written by hand, or one of
+ * The finalMask field of the server editors: JSON written by hand, or one of
  * the finalMasks the arrow lists, matched in whatever spacing or key order it is written.
  */
 @Composable
@@ -75,7 +75,7 @@ internal fun CipherSuitesField(
 }
 
 /**
- * The dialMode field of the server editors and of the exit-node on the Aether pages: written by hand, or one of the
+ * The dialMode field of the server editors: written by hand, or one of the
  * dialModes the arrow lists, matched only when the field has exactly its text, since Xray reads a dialMode as it is
  * written.
  */

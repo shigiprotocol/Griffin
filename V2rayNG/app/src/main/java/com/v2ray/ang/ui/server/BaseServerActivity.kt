@@ -444,12 +444,6 @@ abstract class BaseServerActivity : BaseComponentActivity() {
 
     protected open fun validateProtocolConfig(config: ProfileItem): Boolean = true
 
-    /**
-     * PattNG: the Aether listen port an Aether profile is built on, see [ServerUiState.toProfileItem]; null, the port of
-     * the settings, for the others, which have no core.
-     */
-    protected open val aetherListenPort: Int? get() = null
-
     protected open fun validateCommonConfig(state: ServerUiState, config: ProfileItem): Boolean {
 
         if (config.password.isNullOrBlank()) {
@@ -514,7 +508,7 @@ abstract class BaseServerActivity : BaseComponentActivity() {
      */
     protected fun saveServer(state: ServerUiState) {
         if (!validateBasicConfig(state)) return
-        val config = state.toProfileItem(initialConfig, aetherListenPort)
+        val config = state.toProfileItem(initialConfig)
         if (!validateCommonConfig(state, config)) return
         if (!validateProtocolConfig(config)) return
 

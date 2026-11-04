@@ -72,7 +72,6 @@ object LauncherManager {
 
     internal fun hasUsableServer(config: ProfileItem): Boolean =
         config.configType.isComplexType()
-            || config.configType == EConfigType.AETHER
             || Utils.isPureIpAddress(config.server.orEmpty())
             || Utils.isValidUrl(config.server)
 

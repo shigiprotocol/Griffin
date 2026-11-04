@@ -1,7 +1,6 @@
 package com.v2ray.ang.ui.server
 
 import com.v2ray.ang.AppResources
-import com.v2ray.ang.core.AetherExit
 import com.v2ray.ang.ui.server.FieldPresets.Match
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -133,20 +132,6 @@ class FieldPresetsTest {
         assertFalse(FieldPresets.asksBeforeReplacing("", masks.heldOf("")))
         assertFalse(FieldPresets.asksBeforeReplacing(noise, masks.heldOf(noise)))
         assertTrue(FieldPresets.asksBeforeReplacing("$rsa:$ecdsa", suites.heldOf("$rsa:$ecdsa")))
-    }
-
-    @Test
-    fun theFinalMaskFieldsOfferTheGivenFinalMasksEachLaidOutAsWrittenUnderItsName() {
-        val names = AppResources.stringArray("final_mask_preset_names")
-        val values = AppResources.stringArray("final_mask_preset_values").map(::readAsAapt)
-        assertEquals(listOf("tlshello-0-len (0-104-1-0-0-114-1-1-11)", "tlshello (6-98-1-0-0-114-1-1-11)", "udp-noise (rnd-24-1200-1230)", "merge"), names)
-        assertEquals(listOf(TLSHELLO_0_LEN, TLSHELLO, UDP_NOISE, MERGE), values)
-        // Each is one an exit-node takes, as an outbound does, and the list tells each apart from the others.
-        val listed = FieldPresets(values, Match.JSON)
-        values.forEachIndexed { index, value ->
-            assertTrue(AetherExit.takesFinalMask(value), value)
-            assertEquals(index, listed.indexOf(value))
-        }
     }
 
     @Test

@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.core.CoreServiceManager
@@ -41,8 +42,7 @@ object NotificationManager {
 
     /**
      * Shows a line above the traffic text while the running profile cannot carry traffic yet;
-     * pass null once it can. The Aether warm-up uses it, since Xray is up before the tunnel
-     * behind it is.
+     * pass null once it can. Griffin: also carries the exit country, IP and ping of the connection.
      */
     fun setStatusLine(text: String?) {
         statusLine = text
@@ -106,6 +106,7 @@ object NotificationManager {
 
         mBuilder = NotificationCompat.Builder(service, channelId)
             .setSmallIcon(R.drawable.ic_stat_name)
+            .setColor(ContextCompat.getColor(service, R.color.griffin_orange))
             .setContentTitle(currentConfig?.remarks ?: service.getString(R.string.app_name))
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
@@ -266,9 +267,6 @@ object NotificationManager {
 
         CoreServiceManager.queryAllOutboundTrafficStats().forEach { stat ->
             when {
-                // PattNG: the Aether core's tunnel, the traffic of the outbound that dials it a second time.
-                stat.tag == AppConfig.TAG_EXIT_NODE -> Unit
-
                 stat.tag == AppConfig.TAG_DIRECT -> {
                     when (stat.direction) {
                         AppConfig.UPLINK -> directUplink += stat.value

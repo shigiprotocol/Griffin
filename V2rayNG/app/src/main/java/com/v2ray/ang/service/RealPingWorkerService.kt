@@ -1,8 +1,6 @@
 package com.v2ray.ang.service
 
 import android.content.Context
-import com.v2ray.ang.core.AetherDelayTester
-import com.v2ray.ang.core.CoreConfigContextBuilder
 import com.v2ray.ang.core.CoreConfigManager
 import com.v2ray.ang.core.CoreNativeManager
 import com.v2ray.ang.dto.RealPingEvent
@@ -118,27 +116,9 @@ class RealPingWorkerService(
         val retFailure = -1L
 
         val config = MmkvManager.decodeServerConfig(guid) ?: return retFailure
-        // An Aether profile is measured through its core alone, unless its subscription chains it with
-        // other hops: then it is measured as the chain it runs in, as every chained profile is.
-        if (config.configType == EConfigType.AETHER && !CoreConfigContextBuilder.isChained(config)) {
-            return AetherDelayTester.measure(context, guid, config, SettingsManager.getDelayTestUrl())
-        }
-
         val configResult = CoreConfigManager.getV2rayConfig4Speedtest(context, guid)
         if (!configResult.status) {
             return retFailure
-        }
-        val aether = configResult.aetherCore
-        if (aether != null) {
-            // The configuration reaches the internet through an Aether outbound, so it is measured behind
-            // that core: the live session, or a test tunnel on the same port, which its Aether outbounds
-            // dial either way, and which dials out through a hop of the chain, as the session's would.
-            // Its own server is not probed: it is only reachable through that core.
-            return AetherDelayTester.measureVia(context, guid, aether, configResult.content) { _, _ ->
-                RealPingExecutionLimiter.run(config.configType) {
-                    CoreNativeManager.measureOutboundDelay(configResult.content, SettingsManager.getDelayTestUrl(), batch)
-                }
-            }
         }
         if (!config.configType.isComplexType()
             && config.configType != EConfigType.HYSTERIA2
@@ -164,9 +144,6 @@ class RealPingWorkerService(
         val retFailure = -1L
 
         val config = MmkvManager.decodeServerConfig(guid) ?: return retFailure
-        if (config.configType == EConfigType.AETHER) {
-            return AetherDelayTester.reachability(config)
-        }
         if (!config.configType.isComplexType()
             && config.configType != EConfigType.HYSTERIA2
             && config.configType != EConfigType.WIREGUARD

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Griffin brand colors, from the logo -->
+    <color name="griffin_navy">#FF000826</color>
+    <color name="griffin_orange">#FFF66303</color>
+</resources>

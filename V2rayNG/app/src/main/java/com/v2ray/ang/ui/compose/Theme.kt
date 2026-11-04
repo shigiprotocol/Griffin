@@ -27,15 +27,23 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+// Griffin brand colors, from the logo: a deep classic navy and the griffin's orange.
+val GriffinNavy = Color(0xFF000826) // Deep navy, a shade deeper than the logo's
+val GriffinNavyRaised = Color(0xFF0B1A45) // Navy, one step up for surfaces on the navy
+val GriffinOrange = Color(0xFFF66303) // Griffin orange
+val GriffinOrangeLight = Color(0xFFFF8A3D) // Orange, lighter for text on OLED black
+val GriffinOnNavyMuted = Color(0xFFAEB8D4) // Light navy gray, text on navy that is not selected
+val OledBlack = Color(0xFF000000) // True black, so OLED pixels stay off
+
 private val LightColor = lightColorScheme(
-    primary = Color(0xFF000000), // Black
+    primary = Color(0xFF0B1F5C), // Navy
     onPrimary = Color(0xFFFFFFFF), // White
-    primaryContainer = Color(0xFFE0E0E0), // Light Gray
-    onPrimaryContainer = Color(0xFF000000), // Black
-    secondary = Color(0xFFf97910), // Orange
+    primaryContainer = Color(0xFFDDE3FF), // Pale Navy
+    onPrimaryContainer = GriffinNavy,
+    secondary = GriffinOrange,
     onSecondary = Color(0xFFFFFFFF), // White
-    secondaryContainer = Color(0xFFFFE8D6), // Pale Orange
-    onSecondaryContainer = Color(0xFF2B1700), // Dark Brown
+    secondaryContainer = Color(0xFFFFE3D1), // Pale Orange
+    onSecondaryContainer = Color(0xFF341100), // Dark Brown
     tertiary = Color(0xFF009966), // Green
     onTertiary = Color(0xFFFFFFFF), // White
     tertiaryContainer = Color(0xFFA0F2D0), // Light Green
@@ -45,34 +53,35 @@ private val LightColor = lightColorScheme(
     onError = Color(0xFFFFFFFF), // White
     onErrorContainer = Color(0xFF410002), // Dark Red
     background = Color(0xFFFFFFFF), // White
-    onBackground = Color(0xFF1C1B1F), // Near Black
+    onBackground = Color(0xFF0E1324), // Navy Black
     surface = Color(0xFFFFFFFF), // White
-    onSurface = Color(0xFF1C1B1F), // Near Black
-    surfaceVariant = Color(0xFFE7E0EC), // Light Purple Gray
-    onSurfaceVariant = Color(0xFF49454F), // Dark Gray
-    outline = Color(0xFF79747E), // Medium Gray
-    outlineVariant = Color(0xFFCAC4D0), // Light Gray
-    inverseSurface = Color(0xFF313033), // Dark Gray
-    inverseOnSurface = Color(0xFFF4EFF4), // Very Light Gray
-    inversePrimary = Color(0xFFC0C0C0), // Silver Gray
+    onSurface = Color(0xFF0E1324), // Navy Black
+    surfaceVariant = Color(0xFFE2E6F2), // Light Navy Gray
+    onSurfaceVariant = Color(0xFF444B60), // Dark Navy Gray
+    outline = Color(0xFF747B91), // Navy Gray
+    outlineVariant = Color(0xFFC6CCDD), // Light Navy Gray
+    inverseSurface = Color(0xFF0E1324), // Navy Black
+    inverseOnSurface = Color(0xFFF1F3FA), // Very Light Gray
+    inversePrimary = Color(0xFFB7C4FF), // Light Navy
     scrim = Color(0xFF000000), // Black
-    surfaceTint = Color(0xFF000000), // Black
+    surfaceTint = Color(0xFF0B1F5C), // Navy
     surfaceContainerLowest = Color(0xFFFFFFFF), // White
-    surfaceContainerLow = Color(0xFFF7F7F7), // Very Light Gray
-    surfaceContainer = Color(0xFFF1F1F1), // Light Gray
-    surfaceContainerHigh = Color(0xFFEBEBEB), // Light Gray
-    surfaceContainerHighest = Color(0xFFE5E5E5), // Light Gray
+    surfaceContainerLow = Color(0xFFF6F7FB), // Very Light Gray
+    surfaceContainer = Color(0xFFF0F2F8), // Light Gray
+    surfaceContainerHigh = Color(0xFFEAEDF5), // Light Gray
+    surfaceContainerHighest = Color(0xFFE4E8F2), // Light Gray
 )
 
+// Griffin: OLED black behind everything, navy for what stands on it, orange for what is active.
 private val DarkColor = darkColorScheme(
-    primary = Color(0xFFC0C0C0), // Silver Gray
-    onPrimary = Color(0xFF303030), // Dark Gray
-    primaryContainer = Color(0xFF474747), // Gray
-    onPrimaryContainer = Color(0xFFE0E0E0), // Light Gray
-    secondary = Color(0xFFf97910), // Orange
-    onSecondary = Color(0xFF4E2600), // Dark Brown
-    secondaryContainer = Color(0xFF6F3800), // Brown
-    onSecondaryContainer = Color(0xFFFFE8D6), // Pale Orange
+    primary = GriffinOrangeLight,
+    onPrimary = GriffinNavy,
+    primaryContainer = GriffinNavyRaised,
+    onPrimaryContainer = Color(0xFFFFDCC7), // Pale Orange
+    secondary = GriffinOrange,
+    onSecondary = GriffinNavy,
+    secondaryContainer = Color(0xFF13285E), // Navy
+    onSecondaryContainer = Color(0xFFFFB68A), // Light Orange
     tertiary = Color(0xFF83D6B5), // Mint Green
     onTertiary = Color(0xFF00382E), // Dark Teal
     tertiaryContainer = Color(0xFF005143), // Teal
@@ -81,39 +90,51 @@ private val DarkColor = darkColorScheme(
     errorContainer = Color(0xFF93000A), // Dark Red
     onError = Color(0xFF690005), // Deep Red
     onErrorContainer = Color(0xFFFFDAD6), // Light Red
-    background = Color(0xFF1C1B1F), // Near Black
-    onBackground = Color(0xFFE6E1E5), // Light Gray
-    surface = Color(0xFF1C1B1F), // Near Black
-    onSurface = Color(0xFFE6E1E5), // Light Gray
-    surfaceVariant = Color(0xFF49454F), // Dark Gray
-    onSurfaceVariant = Color(0xFFCAC4D0), // Light Gray
-    outline = Color(0xFF938F99), // Grayish Purple
-    outlineVariant = Color(0xFF49454F), // Dark Gray
-    inverseSurface = Color(0xFFE6E1E5), // Light Gray
-    inverseOnSurface = Color(0xFF1C1B1F), // Near Black
-    inversePrimary = Color(0xFF000000), // Black
-    scrim = Color(0xFF000000), // Black
-    surfaceTint = Color(0xFFC0C0C0), // Silver Gray
-    surfaceContainerLowest = Color(0xFF0F0F12), // Near Black
-    surfaceContainerLow = Color(0xFF1A191D), // Dark Gray
-    surfaceContainer = Color(0xFF1E1D21), // Dark Gray
-    surfaceContainerHigh = Color(0xFF282729), // Dark Gray
-    surfaceContainerHighest = Color(0xFF333234), // Dark Gray
+    background = OledBlack,
+    onBackground = Color(0xFFE8ECF7), // Light Gray
+    surface = OledBlack,
+    onSurface = Color(0xFFE8ECF7), // Light Gray
+    surfaceVariant = Color(0xFF111B36), // Dark Navy
+    onSurfaceVariant = Color(0xFFB4BED8), // Light Navy Gray
+    outline = Color(0xFF5A6684), // Navy Gray
+    outlineVariant = Color(0xFF1C2848), // Dark Navy
+    inverseSurface = Color(0xFFE8ECF7), // Light Gray
+    inverseOnSurface = GriffinNavy,
+    inversePrimary = GriffinOrange,
+    scrim = OledBlack,
+    surfaceTint = OledBlack, // No tint, so raised surfaces stay black
+    surfaceContainerLowest = OledBlack,
+    surfaceContainerLow = Color(0xFF030817), // Navy Black
+    surfaceContainer = Color(0xFF050C22), // Navy Black
+    surfaceContainerHigh = Color(0xFF08122E), // Deep Navy
+    surfaceContainerHighest = Color(0xFF0C1839), // Deep Navy
+)
+
+/**
+ * Griffin: a dynamic dark scheme on OLED black, whatever the wallpaper's colors: the background and the surfaces the
+ * screens lay out on are true black.
+ */
+private fun androidx.compose.material3.ColorScheme.onOledBlack() = copy(
+    background = OledBlack,
+    surface = OledBlack,
+    surfaceContainerLowest = OledBlack,
+    surfaceTint = OledBlack,
+    scrim = OledBlack,
 )
 
 // Semantic Colors
 val colorPing = Color(0xFF009966) // Green
 val colorPingRed = Color(0xFFFF0099) // Pink Red
-val colorConfigType = Color(0xFFf97910) // Orange
-val colorFabActive = Color(0xFFf97910) // Orange
-val colorFabInactiveLight = Color(0xFF9C9C9C) // Gray
-val colorFabInactiveDark = Color(0xFF646464) // Dark Gray
+val colorConfigType = GriffinOrange
+val colorFabActive = GriffinOrange
+val colorFabInactiveLight = Color(0xFF0B1F5C) // Navy
+val colorFabInactiveDark = Color(0xFF1C2A55) // Navy
 val dividerColorLight = Color(0xFFE0E0E0) // Light Gray
-val dividerColorDark = Color(0xFF424242) // Dark Gray
+val dividerColorDark = Color(0xFF16213F) // Dark Navy
 
 // Toast Colors 85%
 val toastNormalBgLight = Color(0xD9353A3E) // Dark Gray
-val toastNormalBgDark = Color(0xD94A4F54) // Darker Gray
+val toastNormalBgDark = Color(0xE60B1A45) // Navy
 val toastSuccessBg = Color(0xD9388E3C) // Green
 val toastErrorBg = Color(0xD9D50000) // Red
 val toastInfoBg = Color(0xD93F51B5) // Indigo Blue
@@ -121,13 +142,16 @@ val toastIconCircleBg = Color(0x33FFFFFF) // Semi-transparent White
 val toastTextColor = Color.White // White
 
 object ThemeManager {
+    /** Griffin: off by default, so the navy and orange of the logo show rather than the wallpaper's colors. */
+    const val DEFAULT_DYNAMIC_COLOR = false
+
     private val _themeMode = MutableStateFlow(
         MmkvManager.decodeSettingsString(AppConfig.PREF_UI_MODE_NIGHT, "0") ?: "0"
     )
     val themeMode: StateFlow<String> = _themeMode.asStateFlow()
 
     private val _dynamicColorEnabled = MutableStateFlow(
-        MmkvManager.decodeSettingsBool(AppConfig.PREF_DYNAMIC_COLOR, true)
+        MmkvManager.decodeSettingsBool(AppConfig.PREF_DYNAMIC_COLOR, DEFAULT_DYNAMIC_COLOR)
     )
     val dynamicColorEnabled: StateFlow<Boolean> = _dynamicColorEnabled.asStateFlow()
 
@@ -145,7 +169,7 @@ object ThemeManager {
         _themeMode.value =
             MmkvManager.decodeSettingsString(AppConfig.PREF_UI_MODE_NIGHT, "0") ?: "0"
         _dynamicColorEnabled.value =
-            MmkvManager.decodeSettingsBool(AppConfig.PREF_DYNAMIC_COLOR, true)
+            MmkvManager.decodeSettingsBool(AppConfig.PREF_DYNAMIC_COLOR, DEFAULT_DYNAMIC_COLOR)
     }
 }
 
@@ -170,7 +194,7 @@ fun AppTheme(
     val context = LocalContext.current
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (darkTheme) dynamicDarkColorScheme(context).onOledBlack() else dynamicLightColorScheme(context)
         }
 
         darkTheme -> DarkColor

@@ -57,19 +57,31 @@ object SpeedtestManager {
         val url = MmkvManager.decodeSettingsString(AppConfig.PREF_IP_API_URL)
             .takeIf { !it.isNullOrBlank() } ?: AppConfig.IP_API_URL
 
-        val proxyUsername = SettingsManager.getSocksUsername()
-        val proxyPassword = SettingsManager.getSocksPassword()
         val httpPort = SettingsManager.getHttpPort()
         if (httpPort == 0) return null
-        val content = HttpUtil.getUrlContent(
+        // Griffin: the service of the settings first; should it be blocked or slow at the exit, Cloudflare's trace,
+        // which nearly every exit reaches.
+        val primary = fetchThroughProxy(url, httpPort)?.let(::parseIpApi)
+        if (primary?.ipAddress != null) return primary
+        val trace = AppConfig.IP_TRACE_URLS.firstNotNullOfOrNull { traceUrl ->
+            fetchThroughProxy(traceUrl, httpPort)?.let(::parseCloudflareTrace)
+        }
+        return trace ?: primary
+    }
+
+    private fun fetchThroughProxy(url: String, httpPort: Int): String? =
+        HttpUtil.getUrlContent(
             UrlContentRequest(
                 url = url,
                 timeout = 5000,
                 httpPort = httpPort,
-                proxyUsername = proxyUsername,
-                proxyPassword = proxyPassword
+                proxyUsername = SettingsManager.getSocksUsername(),
+                proxyPassword = SettingsManager.getSocksPassword()
             )
-        ) ?: return null
+        )
+
+    /** The exit IP and country an IP service answered with in JSON, by any of the field names the known ones use. */
+    internal fun parseIpApi(content: String): RemoteEndpointInfo? {
         val ipInfo = JsonUtil.fromJsonSafe(content, IPAPIInfo::class.java) ?: return null
 
         val ip = listOf(
@@ -81,14 +93,25 @@ object SpeedtestManager {
 
         val country = listOf(
             ipInfo.country_code,
-            ipInfo.country,
             ipInfo.countryCode,
-            ipInfo.location?.country_code
+            ipInfo.location?.country_code,
+            ipInfo.country
         ).firstOrNull { !it.isNullOrBlank() }
 
         return RemoteEndpointInfo(
             country = country,
             ipAddress = ip,
         )
+    }
+
+    /** Griffin: the exit IP and country of a Cloudflare /cdn-cgi/trace answer, lines of key=value; null without an IP. */
+    internal fun parseCloudflareTrace(content: String): RemoteEndpointInfo? {
+        val fields = content.lineSequence()
+            .mapNotNull { line -> line.trim().split('=', limit = 2).takeIf { it.size == 2 } }
+            .associate { (key, value) -> key to value.trim() }
+        val ip = fields["ip"]?.takeIf { it.isNotEmpty() } ?: return null
+        // XX and T1 are what Cloudflare reports when it cannot tell, or the visitor comes through Tor.
+        val country = fields["loc"]?.takeIf { it.length == 2 && it != "XX" && it != "T1" }
+        return RemoteEndpointInfo(country = country, ipAddress = ip)
     }
 }

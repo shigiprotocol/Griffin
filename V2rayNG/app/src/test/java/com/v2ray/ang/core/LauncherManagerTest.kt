@@ -12,13 +12,6 @@ class LauncherManagerTest {
         ProfileItem.create(type).apply { server = address }
 
     @Test
-    fun anAetherProfileStartsWithoutAnEndpoint() {
-        assertTrue(LauncherManager.hasUsableServer(profile(EConfigType.AETHER, null)))
-        assertTrue(LauncherManager.hasUsableServer(profile(EConfigType.AETHER, "")))
-        assertTrue(LauncherManager.hasUsableServer(profile(EConfigType.AETHER, "162.159.198.1")))
-    }
-
-    @Test
     fun groupedProfilesStartWithoutAnAddressOfTheirOwn() {
         assertTrue(LauncherManager.hasUsableServer(profile(EConfigType.POLICYGROUP, null)))
         assertTrue(LauncherManager.hasUsableServer(profile(EConfigType.PROXYCHAIN, null)))

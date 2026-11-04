@@ -146,18 +146,6 @@ class SubEditViewModelTest {
     }
 
     @Test
-    fun twoAetherNeighborsAreTold() {
-        source.names.add("warp", EConfigType.AETHER, server = null)
-        source.names.add("warp 2", EConfigType.AETHER, server = null)
-        val viewModel = viewModel()
-
-        viewModel.save(edits(prev = "warp", next = "warp 2"))
-
-        assertEquals(EditorOutcome.Refused(R.string.aether_chain_one_profile), viewModel.outcome.value)
-        assertTrue(source.saves.isEmpty())
-    }
-
-    @Test
     fun aNewSubscriptionIsStoredOnceAndALaterSaveWritesOverIt() {
         val viewModel = viewModel()
 

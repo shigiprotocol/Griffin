@@ -37,8 +37,7 @@ class ServerProxyChainViewModel(
      * Saves the chain as [remarks] with [members], the names of its profiles in its order. Every member has to be
      * chosen, and there have to be two. They are found by their names as the chain finds its hops when it runs: a name
      * no profile has, as after a rename or a delete, several have, one whose profile has no server address, or only a
-     * group, a chain or a custom configuration has, is told rather than saved, and so is a second Aether member, see
-     * [proxyChainProblem].
+     * group, a chain or a custom configuration has, is told rather than saved, see [proxyChainProblem].
      */
     fun save(remarks: String, members: List<String>) = launchSave {
         if (remarks.isBlank()) return@launchSave null
@@ -48,8 +47,6 @@ class ServerProxyChainViewModel(
 
         when (val problem = proxyChainProblem(chainMembers) { name, takes -> source.withProfileNames(takes) { find -> find(name) } }) {
             is ProxyChainProblem.Unresolved -> return@launchSave EditorOutcome.Refused(problem.message, listOf(problem.name))
-            // An Aether member can stand anywhere in the chain, but one core runs, so there can be one.
-            ProxyChainProblem.SecondAether -> return@launchSave EditorOutcome.Refused(R.string.aether_chain_one_profile)
             null -> Unit
         }
 

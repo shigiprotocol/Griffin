@@ -1,25 +1,27 @@
-# PattNG
+# Griffin
 
-v2rayNG fork for Iranians
+<p align="center"><img src="V2rayNG/app/src/main/res/drawable-nodpi/ic_griffin_logo.png" width="160" alt="Griffin"></p>
 
-**تغییرات v2rayNG:**
+An Xray client for Android, built on PattNG / v2rayNG.
 
-* اضافه شدن cipherSuites و فینگرپرینت unsafe در تنظیمات و شیرلینک.
+**تغییرات Griffin:**
 
-* اضافه شدن هسته‌ی aether
+* نام و آیکون جدید Griffin (لانچر، نوتیفیکیشن، لاک‌اسکرین و کاشی کنترل سنتر)
+* تم سورمه‌ای و نارنجی، و پس‌زمینه‌ی مشکیِ کامل (OLED) در حالت تاریک
+* حذف کامل هسته‌ی Aether
+* بعد از اتصال، خودکار پینگ گرفته می‌شود و پرچم کشور و آی‌پی نهایی کانفیگ در صفحه‌ی اصلی، نوتیفیکیشن و کاشی کنترل سنتر نشان داده می‌شود
+* اگر سرویس آی‌پی تنظیمات جواب ندهد، آی‌پی و کشور از Cloudflare گرفته می‌شود
 
-**تغییرات Xray-core:**
+**از PattNG:**
 
-* امکان اتصال به کانفیگ‌های غیر رمزنگاری شده برای آدرس‌های عمومی در VLESS و TROJAN
+* cipherSuites و فینگرپرینت unsafe در تنظیمات و شیرلینک
+* امکان اتصال به کانفیگ‌های رمزنگاری‌نشده برای آدرس‌های عمومی در VLESS و TROJAN (Xray-core)
 
-## حمایت
+## ساخت
 
-اگر کارهای بنده باعث دسترسی شما به اینترنت آزاد شده است ممنون میشم حمایتی هم از اینجانب انجام دهید
+هر push روی شاخه‌ی `my-releases` در GitHub Actions، APK را می‌سازد (تب Actions → آخرین اجرا → Artifacts).
+برای امضای دائمی با کلید خودتان، secretهای `APP_KEYSTORE_BASE64`، `APP_KEYSTORE_PASSWORD`، `APP_KEYSTORE_ALIAS` و `APP_KEY_PASSWORD` را اضافه کنید؛ بدون آن‌ها با یک کلید ثابت از کش Actions امضا می‌شود.
 
-`USDT (BEP20)`: 0x76a768B53Ca77B43086946315f0BDF21156bF424
+## Credits
 
-`USDT (TRC20)`: TU5gKvKqcXPn8itp1DouBCwcqGHMemBm8o
-
-`TON (TON)`: UQAc-mZB3y7uxWHKiMmq0ORZEYgycWDWZ4V1k73HsXvTJx-i
-
-@patterniha
+[PattNG](https://github.com/patterniha/PattNG) by @patterniha · [v2rayNG](https://github.com/2dust/v2rayNG) by 2dust · [Xray-core](https://github.com/XTLS/Xray-core)

@@ -10,11 +10,11 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.patterniha.pattng"
+        applicationId = "com.shigiprotocol.griffin"
         minSdk = 29
         targetSdk = 37
         versionCode = 755
-        versionName = (project.findProperty("pattngVersion") as? String)?.takeIf { it.isNotBlank() } ?: "2.3.15"
+        versionName = (project.findProperty("pattngVersion") as? String)?.takeIf { it.isNotBlank() } ?: "1.0.0"
 
         val abiFilterList = (properties["ABI_FILTERS"] as? String)?.split(';')
         splits {
@@ -92,10 +92,10 @@ android {
                 .map { it as com.android.build.gradle.internal.api.ApkVariantOutputImpl }
                 .forEach { output ->
                     val abi = output.getFilter("ABI") ?: "universal"
-                    // PattNG: GitHub lists a release's files by name, and a version starts with a digit, which sorts
+                    // Griffin: GitHub lists a release's files by name, and a version starts with a digit, which sorts
                     // before "fdroid": the F-Droid files come after the others. The app's update check finds its file
                     // by "fdroid" and the ABI anywhere in the name, see UpdateCheckerManager.getDownloadUrl.
-                    output.outputFileName = "PattNG_fdroid_${variant.versionName}_${abi}.apk"
+                    output.outputFileName = "Griffin_fdroid_${variant.versionName}_${abi}.apk"
                     if (versionCodes.containsKey(abi)) {
                         output.versionCodeOverride =
                             (100 * variant.versionCode + versionCodes[abi]!!).plus(5000000)
@@ -115,7 +115,7 @@ android {
                     else
                         "universal"
 
-                    output.outputFileName = "PattNG_${variant.versionName}_${abi}.apk"
+                    output.outputFileName = "Griffin_${variant.versionName}_${abi}.apk"
                     if (versionCodes.containsKey(abi)) {
                         output.versionCodeOverride =
                             (1000000 * versionCodes[abi]!!).plus(variant.versionCode)

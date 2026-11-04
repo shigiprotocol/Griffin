@@ -48,6 +48,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.v2ray.ang.dto.GroupMapItem
 import com.v2ray.ang.dto.entities.ServersCache
+import com.v2ray.ang.ui.compose.GriffinNavy
+import com.v2ray.ang.ui.compose.GriffinOnNavyMuted
+import com.v2ray.ang.ui.compose.GriffinOrange
 import kotlinx.coroutines.flow.StateFlow
 
 private val TAB_BAR_PADDING = 3.dp
@@ -72,17 +75,14 @@ fun GroupTabBar(
     modifier: Modifier = Modifier
 ) {
     val selectedIndex = selectedTabIndex.coerceIn(0, groups.lastIndex)
-    val colors = MaterialTheme.colorScheme
-    // The plain surface color equals the screen background in dark mode, so the bar needs its own tone there.
-    val dark = colors.surface.luminance() < 0.5f
-
+    // Griffin: the bar is the navy of the logo in both themes, and the selected tab its orange.
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 6.dp),
         shape = CircleShape,
-        color = if (dark) colors.surfaceContainerHigh else colors.surface,
-        border = BorderStroke(0.5.dp, colors.outlineVariant.copy(alpha = if (dark) 0.6f else 0.35f)),
+        color = GriffinNavy,
+        border = BorderStroke(0.75.dp, GriffinOrange.copy(alpha = 0.45f)),
         shadowElevation = 3.dp
     ) {
         BoxWithConstraints {
@@ -167,7 +167,6 @@ private fun GroupTabItem(
     val servers by serverFlow.collectAsStateWithLifecycle()
     // The default group (empty id) never showed a count.
     val count = if (group.id.isEmpty()) 0 else servers.size
-    val colors = MaterialTheme.colorScheme
     val bringIntoView = remember { BringIntoViewRequester() }
     var size by remember { mutableStateOf(IntSize.Zero) }
     val marginPx = with(LocalDensity.current) { SELECTED_TAB_MARGIN.toPx() }
@@ -188,7 +187,7 @@ private fun GroupTabItem(
             .bringIntoViewRequester(bringIntoView)
             .onSizeChanged { size = it }
             .clip(CircleShape)
-            .background(if (selected) colors.primary.copy(alpha = 0.12f) else Color.Transparent)
+            .background(if (selected) GriffinOrange else Color.Transparent)
             .selectable(selected = selected, role = Role.Tab, onClick = onClick)
             .padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.Center,
@@ -198,7 +197,7 @@ private fun GroupTabItem(
             text = group.remarks,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Medium,
-            color = if (selected) colors.primary else colors.onSurfaceVariant,
+            color = if (selected) GriffinNavy else GriffinOnNavyMuted,
             maxLines = 1,
             softWrap = false,
             overflow = TextOverflow.Ellipsis
@@ -209,14 +208,14 @@ private fun GroupTabItem(
                 modifier = Modifier
                     .defaultMinSize(minWidth = 16.dp, minHeight = 16.dp)
                     .clip(CircleShape)
-                    .background(if (selected) colors.primary else colors.onSurfaceVariant.copy(alpha = 0.55f))
+                    .background(if (selected) GriffinNavy else Color.White.copy(alpha = 0.18f))
                     .padding(horizontal = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = count.toString(),
                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, lineHeight = 12.sp),
-                    color = if (selected) colors.onPrimary else colors.surface,
+                    color = if (selected) GriffinOrange else Color.White,
                     maxLines = 1
                 )
             }

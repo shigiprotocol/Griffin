@@ -1,7 +1,6 @@
 package com.v2ray.ang.core
 
 import com.v2ray.ang.AppConfig
-import com.v2ray.ang.dto.ByName
 import com.v2ray.ang.dto.V2rayConfig.OutboundBean
 import com.v2ray.ang.dto.entities.ProfileItem
 import com.v2ray.ang.enums.EConfigType
@@ -31,14 +30,11 @@ object CoreOutboundBuilder {
             EConfigType.WIREGUARD -> toOutboundWireguard(profileItem)
             EConfigType.HYSTERIA2 -> toOutboundHysteria2(profileItem)
             EConfigType.HTTP -> toOutboundHttp(profileItem)
-            EConfigType.AETHER -> toOutboundAether(profileItem)
             else -> null
         }
 
         outbound ?: return null
-        // PattNG: an Aether profile's outbound only reaches its core on the loopback address; its dialMode is
-        // that of the exit-node its traffic leaves Xray by, see toOutboundAetherExit.
-        if (profileItem.configType != EConfigType.AETHER) applyDialMode(outbound, profileItem)
+        applyDialMode(outbound, profileItem)
         applyTargetStrategy(outbound, profileItem)
         val ret = updateOutboundWithGlobalSettings(outbound)
         if (!ret) return null
@@ -53,7 +49,7 @@ object CoreOutboundBuilder {
      */
     internal fun applyDialMode(outbound: OutboundBean, profileItem: ProfileItem) = applyDialMode(outbound, profileItem.dialMode)
 
-    /** [applyDialMode] with the dialMode itself, as the exit-node of an Aether core takes its profile's. */
+    /** [applyDialMode] with the dialMode itself. */
     internal fun applyDialMode(outbound: OutboundBean, mode: String?) {
         val dialMode = mode.nullIfBlank() ?: return
         if (outbound.streamSettings == null) {
@@ -76,34 +72,20 @@ object CoreOutboundBuilder {
     }
 
     /**
-     * PattNG: the targetStrategy of [profile] when it stores none. An Aether profile whose traffic leaves its core
-     * through WARP gets ForceIPv4v6: the core looks names up inside the tunnel with no cache, once for every UDP
-     * datagram, so Xray's DNS, with its cache, looks them up first, IPv4 before IPv6, and a name it cannot look up is
-     * not sent at all. Every other profile passes names on as they are (AsIs, Xray's own): an Aether one whose traffic
-     * leaves through Tor or Psiphon, which look names up at their exit; a WireGuard one, whose tunnel looks names up
-     * with the profile's own DNS and keeps the answers; and one of any other type, whose server looks them up. Where an
-     * outbound carries something else than your traffic, see [applyChainTargetStrategies] and [toOutboundAetherExit].
+     * The targetStrategy of [profile] when it stores none: AsIs, Xray's own, which passes names on as they are.
      */
-    fun defaultTargetStrategy(profile: ProfileItem): String =
-        if (profile.configType == EConfigType.AETHER && AetherCore.leavesThroughWarp(profile)) {
-            AppConfig.TARGET_STRATEGY_FORCE_IPV4V6
-        } else {
-            AppConfig.TARGET_STRATEGY_AS_IS
-        }
+    @Suppress("UNUSED_PARAMETER")
+    fun defaultTargetStrategy(profile: ProfileItem): String = AppConfig.TARGET_STRATEGY_AS_IS
 
     /**
      * PattNG: the targetStrategy of the outbounds of a proxy chain, [hops] its profiles beside their outbounds, tagged,
      * the first carrying your traffic. A hop after the first carries the connection of the hop before it to that
      * hop's server, whose name a lookup by Xray would ask of the DNS that reaches out through this same chain: it
-     * passes names on as they are unless its profile sets a targetStrategy. The exit-node of an Aether hop passes every
-     * name on, see [toOutboundAetherExit].
+     * passes names on as they are unless its profile sets a targetStrategy.
      */
     internal fun applyChainTargetStrategies(hops: List<Pair<ProfileItem, OutboundBean>>) {
         hops.forEachIndexed { index, (profile, outbound) ->
-            when {
-                outbound.tag == AppConfig.TAG_EXIT_NODE -> outbound.targetStrategy = null
-                index > 0 && profile.targetStrategy.isNullOrBlank() -> outbound.targetStrategy = null
-            }
+            if (index > 0 && profile.targetStrategy.isNullOrBlank()) outbound.targetStrategy = null
         }
     }
 
@@ -285,21 +267,6 @@ object CoreOutboundBuilder {
                 settings.user = profileItem.username.orEmpty()
                 settings.pass = profileItem.password.orEmpty()
             }
-        }
-
-        return outboundBean
-    }
-
-    /**
-     * A SOCKS outbound to the Aether core, on the port the app dials the core of the profile on. The
-     * core itself is named at the top of the configuration, as aetherCommand, once the configuration is built.
-     */
-    private fun toOutboundAether(profileItem: ProfileItem): OutboundBean? {
-        val outboundBean = createInitOutbound(EConfigType.SOCKS)
-
-        outboundBean?.settings?.let { settings ->
-            settings.address = AppConfig.LOOPBACK
-            settings.port = AetherCore.of(profileItem).port
         }
 
         return outboundBean
@@ -795,7 +762,7 @@ object CoreOutboundBuilder {
     fun updateOutboundFinalMask(streamSettings: OutboundBean.StreamSettingsBean, profileItem: ProfileItem) =
         updateOutboundFinalMask(streamSettings, profileItem.finalMask)
 
-    /** [updateOutboundFinalMask] with the finalMask JSON itself, as the exit-node of an Aether core takes its profile's. */
+    /** [updateOutboundFinalMask] with the finalMask JSON itself. */
     fun updateOutboundFinalMask(streamSettings: OutboundBean.StreamSettingsBean, finalMask: String?) {
         finalMask?.let {
             val parsedFinalMask = JsonUtil.parseString(finalMask)
@@ -805,76 +772,5 @@ object CoreOutboundBuilder {
                 LogUtil.w("V2rayConfigManager", "Invalid finalMask JSON, keeping previously generated finalmask")
             }
         }
-    }
-
-    /**
-     * PattNG: the exit-node of an Aether core, the outbound that what the core dials out through leaves Xray
-     * by: the outbound of the profile [exit] names as its node, which [nodeOutbound] gives, as a proxy chain
-     * builds its hop, changed in its tag, and passing every name the core sends on as it is, whatever its
-     * profile sets: a name Xray looked up for it would be asked of the DNS that reaches out through the core
-     * itself, which is not up yet when it needs the name, or, where the configuration has no DNS, of the
-     * phone's own resolver, outside the tunnel; or else a freedom outbound with the finalMask and the
-     * dialMode of [exit] set as an ordinary profile sets them on its own outbound. Null when the node gives
-     * none, see [ExitNodeOutbound.Problem]: the core would reach the internet without it. The session's
-     * configuration carries it, and a core of its own dials out through it as well, see
-     * [AetherCoreManager.withProcess].
-     */
-    fun toOutboundAetherExit(exit: AetherExit, nodeOutbound: (String) -> ExitNodeOutbound = ::toOutboundOfNode): OutboundBean? {
-        exit.node?.let { name ->
-            return (nodeOutbound(name) as? ExitNodeOutbound.Built)?.outbound?.apply {
-                tag = AppConfig.TAG_EXIT_NODE
-                targetStrategy = null
-            }
-        }
-        val outbound = OutboundBean(tag = AppConfig.TAG_EXIT_NODE, protocol = "freedom", mux = null)
-        if (!exit.finalMask.isNullOrBlank()) {
-            // A freedom outbound has no transport; the stream settings carry the mask alone.
-            outbound.streamSettings = OutboundBean.StreamSettingsBean(network = null)
-            updateOutboundFinalMask(outbound.streamSettings!!, exit.finalMask)
-        }
-        applyDialMode(outbound, exit.dialMode)
-        return outbound
-    }
-
-    /**
-     * PattNG: the outbound of the profile named [name], built as for a hop of a proxy chain, or why there is
-     * none: no profile that can be an exit-node has the name any more, several have it, or the one that has
-     * it gives no outbound, or one whose ECH outbound cannot go beside it, see [nodeOutboundOf]. See
-     * [AetherExit.node].
-     */
-    fun toOutboundOfNode(name: String): ExitNodeOutbound = when (val found = AetherExit.nodeProfile(name)) {
-        is ByName.One -> try {
-            nodeOf(found.value, ::convert)
-        } catch (e: Exception) {
-            LogUtil.e(AppConfig.TAG, "Failed to build the outbound of the Aether exit-node profile", e)
-            ExitNodeOutbound.NoOutbound
-        }
-
-        ByName.None -> ExitNodeOutbound.NotFound
-        ByName.Several -> ExitNodeOutbound.SameName
-    }
-
-    /**
-     * PattNG: what [profile], the exit-node, gives with its outbound, which [build] makes, see [nodeOutboundOf], and the
-     * digest of the profile as stored, as a test takes it: taken first, since building the outbound writes into the
-     * profile, as a Hysteria2 one's does.
-     */
-    internal fun nodeOf(profile: ProfileItem, build: (ProfileItem) -> OutboundBean?): ExitNodeOutbound {
-        val content = AetherExit.contentOf(profile)
-        return when (val built = nodeOutboundOf(build(profile))) {
-            is ExitNodeOutbound.Built -> built.copy(content = content)
-            else -> built
-        }
-    }
-
-    /**
-     * PattNG: what the [outbound] a node's profile gives makes of it as the exit-node, see [toOutboundOfNode]: none, or
-     * one whose ECH outbound the configuration the exit of a core of its own opens with would refuse, where it goes
-     * beside the exit-node alone, see [AetherCoreManager.exitConfiguration], leaves it unusable.
-     */
-    internal fun nodeOutboundOf(outbound: OutboundBean?): ExitNodeOutbound = when {
-        outbound == null -> ExitNodeOutbound.NoOutbound
-        !EchOutbound.takes(outbound, setOf(AppConfig.TAG_EXIT_NODE)) -> ExitNodeOutbound.EchUnusable
-        else -> ExitNodeOutbound.Built(outbound)
     }
 }
